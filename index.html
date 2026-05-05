@@ -20,7 +20,7 @@
         content="Buat Tanda Tangan Elektronik berbasis QR Code yang terverifikasi secara online.">
     <meta name="twitter:image" content="https://qr-tte-generator.vercel.app/og-image.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.6.0/dist/easy.qrcode.min.js"></script>
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -43,6 +43,13 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+        }
+
+        #qrcode canvas {
+            width: 256px !important;
+            height: 256px !important;
+            max-width: 100%;
+            border-radius: 1rem;
         }
 
         .glass {
@@ -180,6 +187,47 @@
                     </div>
                 </div>
 
+                <!-- Style Selection -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-2">Pilih Style QR <span class="text-brand-400">*</span></label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <!-- Klasik -->
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="qrStyle" value="klasik" class="peer hidden" checked>
+                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-brand-500/10 peer-checked:border-brand-500 peer-checked:text-brand-400 text-slate-400 hover:bg-white/10 transition">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded bg-[#1e1b4b] border border-white/20"></div>
+                                <span class="text-xs font-medium">Klasik</span>
+                            </div>
+                        </label>
+                        <!-- Elegan -->
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="qrStyle" value="elegan" class="peer hidden">
+                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-slate-500/10 peer-checked:border-slate-500 peer-checked:text-slate-300 text-slate-400 hover:bg-white/10 transition">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded border border-white/20 relative" style="background-color: #0f172a;">
+                                    <div class="absolute top-1 left-1 w-2.5 h-2.5 border-[2px] border-[#6366f1]"></div>
+                                </div>
+                                <span class="text-xs font-medium">Elegan</span>
+                            </div>
+                        </label>
+                        <!-- Emerald -->
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="qrStyle" value="emerald" class="peer hidden">
+                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500 peer-checked:text-emerald-400 text-slate-400 hover:bg-white/10 transition">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded bg-[#059669] border border-white/20"></div>
+                                <span class="text-xs font-medium">Emerald</span>
+                            </div>
+                        </label>
+                        <!-- Brand -->
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="qrStyle" value="brand" class="peer hidden">
+                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-purple-500/10 peer-checked:border-purple-500 peer-checked:text-purple-400 text-slate-400 hover:bg-white/10 transition">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded bg-[#4f46e5] border border-white/20"></div>
+                                <span class="text-xs font-medium">Brand</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Buttons -->
                 <div class="pt-2 space-y-3">
                     <button type="submit" id="btnGenerate"
@@ -268,6 +316,7 @@
                 let logoDataURL = null;
                 let ttdDataURL = null;
                 let qrInstance = null;
+                let currentStyle = 'klasik';
 
                 // ========== DOM ==========
                 const form = document.getElementById('tteForm');
@@ -289,6 +338,7 @@
                 const qrContainer = document.getElementById('qrcode');
                 const infoCard = document.getElementById('infoCard');
                 const syncStatus = document.getElementById('syncStatus');
+                const styleRadios = document.querySelectorAll('input[name="qrStyle"]');
 
                 // ========== LOGO PREVIEW ==========
                 logoUpload.addEventListener('change', (e) => {
@@ -327,6 +377,14 @@
                     });
                 }
 
+                // ========== STYLE SELECTION ==========
+                styleRadios.forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        currentStyle = e.target.value;
+                        if (currentUUID) generateQR();
+                    });
+                });
+
                 // ========== QR GENERATION ==========
                 function generateQR() {
                     // QR mengarah ke halaman verifikasi.html (hosted di domain yang sama)
@@ -338,28 +396,49 @@
                     qrPlaceholder.classList.add('hidden');
                     qrContainer.classList.remove('hidden');
 
+                    // Set dynamic styling based on selected style
+                    let dotType = "square";
+                    let cornerType = "square";
+                    let dotColor = "#1e1b4b";
+                    let cornerColor = "#1e1b4b";
+
+                    if (currentStyle === 'elegan') {
+                        dotType = "dots";
+                        cornerType = "extra-rounded";
+                        dotColor = "#0f172a"; 
+                        cornerColor = "#6366f1"; 
+                    } else if (currentStyle === 'emerald') {
+                        dotType = "rounded";
+                        cornerType = "dot";
+                        dotColor = "#059669";
+                        cornerColor = "#047857";
+                    } else if (currentStyle === 'brand') {
+                        dotType = "classy";
+                        cornerType = "extra-rounded";
+                        dotColor = "#4f46e5";
+                        cornerColor = "#4338ca";
+                    }
+
                     const opts = {
-                        text: verifyURL,
-                        width: 256,
-                        height: 256,
-                        colorDark: '#1e1b4b',
-                        colorLight: '#ffffff',
-                        correctLevel: QRCode.CorrectLevel.H,
-                        quietZone: 12,
-                        quietZoneColor: '#ffffff',
-                        dotScale: 0.85,
+                        width: 1024,
+                        height: 1024,
+                        type: "canvas",
+                        data: verifyURL,
+                        margin: 40,
+                        qrOptions: { typeNumber: 0, mode: "Byte", errorCorrectionLevel: "H" },
+                        imageOptions: { hideBackgroundDots: true, imageSize: 0.35, margin: 20, crossOrigin: "anonymous" },
+                        dotsOptions: { color: dotColor, type: dotType },
+                        backgroundOptions: { color: "#ffffff" },
+                        cornersSquareOptions: { color: cornerColor, type: cornerType },
+                        cornersDotOptions: { color: cornerColor, type: cornerType === 'extra-rounded' ? 'dot' : cornerType === 'dot' ? 'dot' : 'square' }
                     };
 
                     if (logoDataURL) {
-                        opts.logo = logoDataURL;
-                        opts.logoWidth = 60;
-                        opts.logoHeight = 60;
-                        opts.logoBackgroundTransparent = false;
-                        opts.logoBackgroundColor = '#ffffff';
-                        opts.logoBorderRadius = 8;
+                        opts.image = logoDataURL;
                     }
 
-                    qrInstance = new QRCode(qrContainer, opts);
+                    qrInstance = new QRCodeStyling(opts);
+                    qrInstance.append(qrContainer);
                 }
 
                 // ========== FORM SUBMIT ==========
@@ -391,19 +470,19 @@
                 btnDownload.addEventListener('click', () => {
                     const canvas = qrContainer.querySelector('canvas');
                     if (!canvas) {
-                        const img = qrContainer.querySelector('img');
-                        if (img) {
-                            const a = document.createElement('a');
-                            a.href = img.src;
-                            a.download = `TTE_${nip.value.trim()}_${currentUUID.slice(0, 8)}.png`;
-                            a.click();
-                        }
+                        alert('Gagal mendownload: QR Code belum dirender sepenuhnya.');
                         return;
                     }
+                    
+                    const nipStr = nip.value.trim().replace(/[^a-zA-Z0-9]/g, '') || 'User';
+                    const fileName = `TTE_${nipStr}_${currentUUID.slice(0, 8)}.png`;
+                    
                     const a = document.createElement('a');
                     a.href = canvas.toDataURL('image/png');
-                    a.download = `TTE_${nip.value.trim()}_${currentUUID.slice(0, 8)}.png`;
+                    a.download = fileName;
+                    document.body.appendChild(a);
                     a.click();
+                    document.body.removeChild(a);
                 });
 
                 // ========== SYNC TO SHEETS ==========

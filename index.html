@@ -10,13 +10,15 @@
     <!-- Open Graph / Social Preview -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="QR TTE Generator — Tanda Tangan Elektronik">
-    <meta property="og:description" content="Buat Tanda Tangan Elektronik berbasis QR Code yang terverifikasi secara online.">
-    <meta property="og:image" content="https://qr-tte-generator.vercel.app/favicon.png">
+    <meta property="og:description"
+        content="Buat Tanda Tangan Elektronik berbasis QR Code yang terverifikasi secara online.">
+    <meta property="og:image" content="https://qr-tte-generator.vercel.app/og-image.png">
     <meta property="og:url" content="https://qr-tte-generator.vercel.app/">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="QR TTE Generator — Tanda Tangan Elektronik">
-    <meta name="twitter:description" content="Buat Tanda Tangan Elektronik berbasis QR Code yang terverifikasi secara online.">
-    <meta name="twitter:image" content="https://qr-tte-generator.vercel.app/favicon.png">
+    <meta name="twitter:description"
+        content="Buat Tanda Tangan Elektronik berbasis QR Code yang terverifikasi secara online.">
+    <meta name="twitter:image" content="https://qr-tte-generator.vercel.app/og-image.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.6.0/dist/easy.qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -125,21 +127,24 @@
             <form id="tteForm" class="space-y-5" autocomplete="off">
                 <!-- Nama -->
                 <div>
-                    <label for="nama" class="block text-xs font-medium text-slate-400 mb-1.5">Nama Lengkap <span class="text-red-400">*</span></label>
+                    <label for="nama" class="block text-xs font-medium text-slate-400 mb-1.5">Nama Lengkap <span
+                            class="text-red-400">*</span></label>
                     <input id="nama" type="text" required placeholder="WIRAWAN, S.Kom"
-                        class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none input-glow transition">
+                        class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-500 placeholder:italic outline-none input-glow transition">
                 </div>
                 <!-- Jabatan -->
                 <div>
-                    <label for="jabatan" class="block text-xs font-medium text-slate-400 mb-1.5">Jabatan <span class="text-red-400">*</span></label>
+                    <label for="jabatan" class="block text-xs font-medium text-slate-400 mb-1.5">Jabatan <span
+                            class="text-red-400">*</span></label>
                     <input id="jabatan" type="text" required placeholder="Penata Layanan Operasional"
-                        class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none input-glow transition">
+                        class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-500 placeholder:italic outline-none input-glow transition">
                 </div>
                 <!-- NIP -->
                 <div>
-                    <label for="nip" class="block text-xs font-medium text-slate-400 mb-1.5">NIP <span class="text-red-400">*</span></label>
-                    <input id="nip" type="text" required placeholder="Silahkan input NIP disini"
-                        class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none input-glow transition">
+                    <label for="nip" class="block text-xs font-medium text-slate-400 mb-1.5">NIP <span
+                            class="text-red-400">*</span></label>
+                    <input id="nip" type="text" required placeholder="Silahkan Input NIP Disini"
+                        class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-500 placeholder:italic outline-none input-glow transition">
                 </div>
                 <!-- Logo Upload -->
                 <div>

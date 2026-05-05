@@ -244,7 +244,7 @@
             (() => {
                 // ========== CONFIG ==========
                 // Ganti URL ini dengan URL Web App Google Apps Script Anda setelah deploy
-                const GAS_URL = 'https://script.google.com/macros/s/AKfycbyT71yVPV6v-IgGzQQhj6tBLWv00jx-E0p9PQe9YaZvGXD-8KG6uWJmMkYekYagCNZn/exec';
+                const GAS_URL = 'https://script.google.com/macros/s/AKfycbwZNiQtyBHqqXMOINVkXYzQhxggZKiwc_WkqzUhWJ5sSrHbCoqLimR6Q22hFSMkBySd/exec';
 
                 // ========== STATE ==========
                 let currentUUID = '';
@@ -313,7 +313,9 @@
 
                 // ========== QR GENERATION ==========
                 function generateQR() {
-                    const verifyURL = `${GAS_URL}?id=${currentUUID}`;
+                    // QR mengarah ke halaman verifikasi.html (hosted di domain yang sama)
+                    const baseURL = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+                    const verifyURL = `${baseURL}/verifikasi.html?id=${currentUUID}`;
 
                     // Clear previous
                     qrContainer.innerHTML = '';

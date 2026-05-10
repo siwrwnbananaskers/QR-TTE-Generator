@@ -31,9 +31,15 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
-                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
-                            300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1',
-                            600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81'
+                            50: '#fdfef1', 100: '#f8fcd5', 200: '#f0f9aa',
+                            300: '#e5f476', 400: '#d5eb3d', 500: '#c5db24', // Lime Yellow
+                            600: '#9db416', 700: '#778a13', 800: '#5c6914', 900: '#4e5a15'
+                        },
+                        navy: {
+                            800: '#1e3a8a', 900: '#001f5b', 950: '#06132b' // Dark Navy
+                        },
+                        accent: {
+                            500: '#0066cc' // Bright Blue
                         }
                     }
                 }
@@ -99,7 +105,12 @@
     </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-brand-900 text-white">
+<body class="bg-navy-950 text-slate-200 min-h-screen flex flex-col p-4 md:p-8 overflow-x-hidden relative">
+    <!-- Background Decor -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden bg-navy-950">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent-500/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-brand-500/20 blur-[120px]"></div>
+    </div>
 
     <!-- Header -->
     <header class="pt-8 pb-4 text-center fade-up">
@@ -136,7 +147,7 @@
                 <div>
                     <label for="nama" class="block text-xs font-medium text-slate-400 mb-1.5">Nama Lengkap <span
                             class="text-red-400">*</span></label>
-                    <input id="nama" type="text" required placeholder="Wirawan, S.Kom"
+                    <input id="nama" type="text" required placeholder="WIRAWAN, S.Kom"
                         class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-500 placeholder:italic outline-none input-glow transition">
                 </div>
                 <!-- Jabatan -->
@@ -172,8 +183,8 @@
                     <label class="block text-xs font-medium text-slate-400 mb-1.5">Tanda Tangan Asli <span
                             class="text-red-400">*</span></label>
                     <label for="ttdUpload"
-                        class="flex items-center gap-3 cursor-pointer w-full rounded-xl bg-white/5 border border-dashed border-white/15 px-4 py-3 text-sm text-slate-400 hover:border-emerald-400/50 hover:bg-emerald-500/5 transition">
-                        <svg class="w-5 h-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor"
+                        class="flex items-center gap-3 cursor-pointer w-full rounded-xl bg-white/5 border border-dashed border-white/15 px-4 py-3 text-sm text-slate-400 hover:border-brand-400/50 hover:bg-brand-500/5 transition">
+                        <svg class="w-5 h-5 shrink-0 text-brand-400" fill="none" stroke="currentColor"
                             stroke-width="2" viewBox="0 0 24 24">
                             <path
                                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -209,20 +220,20 @@
                                 <span class="text-xs font-medium">Elegan</span>
                             </div>
                         </label>
-                        <!-- Emerald -->
+                        <!-- Emerald / Lime -->
                         <label class="relative cursor-pointer">
                             <input type="radio" name="qrStyle" value="emerald" class="peer hidden">
-                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500 peer-checked:text-emerald-400 text-slate-400 hover:bg-white/10 transition">
-                                <div class="w-8 h-8 mx-auto mb-2 rounded bg-[#059669] border border-white/20"></div>
-                                <span class="text-xs font-medium">Emerald</span>
+                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-brand-500/10 peer-checked:border-brand-500 peer-checked:text-brand-400 text-slate-400 hover:bg-white/10 transition">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded bg-[#c5db24] border border-white/20"></div>
+                                <span class="text-xs font-medium">Lime</span>
                             </div>
                         </label>
-                        <!-- Brand -->
+                        <!-- Brand / Accent -->
                         <label class="relative cursor-pointer">
                             <input type="radio" name="qrStyle" value="brand" class="peer hidden">
-                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-purple-500/10 peer-checked:border-purple-500 peer-checked:text-purple-400 text-slate-400 hover:bg-white/10 transition">
-                                <div class="w-8 h-8 mx-auto mb-2 rounded bg-[#4f46e5] border border-white/20"></div>
-                                <span class="text-xs font-medium">Brand</span>
+                            <div class="p-3 text-center rounded-xl bg-white/5 border border-white/10 peer-checked:bg-accent-500/10 peer-checked:border-accent-500 peer-checked:text-accent-400 text-slate-400 hover:bg-white/10 transition">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded bg-[#0066cc] border border-white/20"></div>
+                                <span class="text-xs font-medium">Blue</span>
                             </div>
                         </label>
                     </div>
@@ -231,14 +242,10 @@
                 <!-- Buttons -->
                 <div class="pt-2 space-y-3">
                     <button type="submit" id="btnGenerate"
-                        class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-500/20 active:scale-[.98]">
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-500 to-brand-400 hover:from-brand-400 hover:to-brand-300 text-navy-950 font-bold text-sm transition-all shadow-lg shadow-brand-500/20 active:scale-[.98]">
                         ⚡ Generate QR Code
                     </button>
                     <div class="grid grid-cols-2 gap-3">
-                        <button type="button" id="btnDownload" disabled
-                            class="py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-sm font-medium hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed">
-                            📥 Download PNG
-                        </button>
                         <button type="button" id="btnSync" disabled
                             class="py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-sm font-medium hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                             <span id="syncSpinner" class="hidden">
@@ -250,7 +257,14 @@
                             </span>
                             <span id="syncText">☁️ Sync to Sheets</span>
                         </button>
+                        <button type="button" id="btnDownload" disabled
+                            class="py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-sm font-medium hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                            📥 Download PNG
+                        </button>
                     </div>
+                    <p class="text-[11px] text-slate-500 text-center mt-2 italic">
+                        * Silakan klik <strong>Sync to Sheets</strong> terlebih dahulu sebelum mengunduh barcode.
+                    </p>
                 </div>
             </form>
         </section>
@@ -259,7 +273,7 @@
         <section class="glass rounded-2xl p-6 md:p-8 glow fade-up flex flex-col items-center"
             style="animation-delay:.25s">
             <h2 class="text-lg font-semibold mb-6 flex items-center gap-2 self-start">
-                <span class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path
                             d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
@@ -405,18 +419,18 @@
                     if (currentStyle === 'elegan') {
                         dotType = "dots";
                         cornerType = "extra-rounded";
-                        dotColor = "#0f172a"; 
-                        cornerColor = "#6366f1"; 
+                        dotColor = "#001f5b"; 
+                        cornerColor = "#0066cc"; 
                     } else if (currentStyle === 'emerald') {
                         dotType = "rounded";
                         cornerType = "dot";
-                        dotColor = "#059669";
-                        cornerColor = "#047857";
+                        dotColor = "#a3b814";
+                        cornerColor = "#778a13";
                     } else if (currentStyle === 'brand') {
                         dotType = "classy";
                         cornerType = "extra-rounded";
-                        dotColor = "#4f46e5";
-                        cornerColor = "#4338ca";
+                        dotColor = "#0066cc";
+                        cornerColor = "#001f5b";
                     }
 
                     const opts = {

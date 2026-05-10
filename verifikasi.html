@@ -322,6 +322,18 @@
             color: #475569;
         }
 
+        .footer-text a {
+            color: #c5db24;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .footer-text a:hover {
+            color: #e5f476;
+        }
+
         .uuid-box {
             background: rgba(255, 255, 255, .04);
             border: 1px solid rgba(255, 255, 255, .08);
@@ -422,7 +434,7 @@
                         <div class="row"><span class="label">UUID</span><span class="value" style="font-size:11px;font-family:monospace">${esc(d.uuid)}</span></div>
                         <div class="row"><span class="label">Timestamp</span><span class="value">${esc(d.timestamp)}</span></div>
                     </div>
-                    <p class="footer-text">© 2026 Digitalized by WiraWebSolusi</p>
+                    <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
                 `;
                 } else {
                     // NOT FOUND
@@ -435,7 +447,7 @@
                     <h1>DATA TIDAK DITEMUKAN</h1>
                     <p class="sub">TTE dengan ID berikut tidak tercatat dalam sistem.</p>
                     <div class="uuid-box">${esc(uuid)}</div>
-                    <p class="footer-text">© 2026 Digitalized by WiraWebSolusi</p>
+                    <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
                 `;
                 }
 
@@ -449,7 +461,7 @@
                 <div class="status-icon invalid"><svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
                 <h1>GAGAL MEMVERIFIKASI</h1>
                 <p class="sub">Terjadi kesalahan saat menghubungi server. Silakan coba lagi.</p>
-                <p class="footer-text">© 2026 Digitalized by WiraWebSolusi</p>
+                <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
             `;
             }
         })();

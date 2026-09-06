@@ -313,16 +313,20 @@
         </section>
     </main>
 
-    <footer class="text-center text-xs text-slate-600 pb-8">
-        © 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer"
-            class="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-semibold transition">WiraWebSolusi</a>
+    <footer class="text-center text-xs text-slate-600 pb-8 flex flex-col items-center gap-2">
+        <p>© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer"
+            class="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-semibold transition">WiraWebSolusi</a></p>
+        <a href="admin.html" class="inline-flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-brand-400 transition bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Admin Portal
+        </a>
     </footer>
 
     <script>
             (() => {
                 // ========== CONFIG ==========
                 // Ganti URL ini dengan URL Web App Google Apps Script Anda setelah deploy
-                const GAS_URL = 'https://script.google.com/macros/s/AKfycbx3oQgU9P6tqupzCVoKW0lL4c2E29WY25eWgr3GL92OVS4-Lx-A4dIkS9ySzK0WqbHp/exec';
+                const GAS_URL = 'https://script.google.com/macros/s/AKfycby-1lCiolaitI4gC46o9tzFsgExXWijCF6EEmj12wG3uyJzeN72AZf8AAbq1e-y1PX3/exec';
 
                 // ========== STATE ==========
                 let currentUUID = '';

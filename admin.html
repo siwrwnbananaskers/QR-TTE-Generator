@@ -78,28 +78,96 @@
         /* ===== SIDEBAR ===== */
         .sidebar {
             width: 270px;
-            background: rgba(14, 19, 32, 0.85);
+            max-width: 85vw;
+            background: rgba(14, 19, 32, 0.94);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 24px 18px;
+            padding: 22px 18px;
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
-            z-index: 50;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            height: 100vh;
+            height: 100dvh;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            z-index: 60;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        }
+
+        /* Custom Scrollbar for Sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+
+        /* Mobile Backdrop Overlay */
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.72);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 55;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .sidebar-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        body.sidebar-open {
+            overflow: hidden !important;
+            touch-action: none;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 4px 8px 20px;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 4px 6px 18px;
             border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
+        }
+
+        .brand-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-close-btn {
+            display: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .sidebar-close-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
         .brand-icon {
@@ -153,6 +221,7 @@
 
         .user-avatar-wrap {
             position: relative;
+            cursor: pointer;
         }
 
         .user-avatar {
@@ -167,6 +236,40 @@
             font-size: 16px;
             color: #fff;
             border: 1.5px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .user-avatar-wrap:hover .user-avatar {
+            border-color: #60a5fa;
+            box-shadow: 0 0 14px rgba(59, 130, 246, 0.5);
+            transform: scale(1.03);
+        }
+
+        .avatar-edit-badge {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            color: #93c5fd;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .user-avatar-wrap:hover .avatar-edit-badge {
+            opacity: 1;
         }
 
         .user-status-dot {
@@ -178,6 +281,7 @@
             position: absolute;
             bottom: -2px;
             right: -2px;
+            z-index: 2;
         }
 
         .theme-toggle-dummy {
@@ -218,7 +322,6 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            flex: 1;
         }
 
         .nav-item {
@@ -252,6 +355,25 @@
             flex-shrink: 0;
         }
 
+        .nav-item-logout {
+            margin-top: 8px;
+            background: rgba(239, 68, 68, 0.1) !important;
+            border: 1px solid rgba(239, 68, 68, 0.25) !important;
+            color: #fca5a5 !important;
+            font-weight: 700;
+        }
+
+        .nav-item-logout:hover {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: rgba(239, 68, 68, 0.5) !important;
+            color: #fff !important;
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.25);
+        }
+
+        .nav-item-logout svg {
+            color: #f87171;
+        }
+
         .nav-badge {
             margin-left: auto;
             background: rgba(59, 130, 246, 0.2);
@@ -264,11 +386,12 @@
 
         /* Sidebar Bottom Banner */
         .sidebar-bottom-banner {
-            margin-top: auto;
+            margin-top: 18px;
             background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(124, 58, 237, 0.15));
             border: 1px solid rgba(99, 102, 241, 0.25);
             border-radius: 14px;
-            padding: 14px;
+            padding: 13px 14px;
+            flex-shrink: 0;
         }
 
         .banner-header {
@@ -301,6 +424,8 @@
             flex: 1;
             padding: 28px 36px;
             min-height: 100vh;
+            min-height: 100dvh;
+            padding-bottom: max(36px, env(safe-area-inset-bottom, 24px));
             position: relative;
             z-index: 1;
         }
@@ -344,6 +469,12 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .topbar-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .search-box {
@@ -687,10 +818,106 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        /* Table Design */
+        .filter-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .filter-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 210px;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(59, 130, 246, 0.15);
+            border-radius: 12px;
+            padding: 6px;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .filter-dropdown-menu.show {
+            display: flex;
+        }
+
+        .filter-dropdown-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            padding: 6px 10px 4px;
+        }
+
+        .filter-opt {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-opt:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+
+        .filter-opt.active {
+            background: rgba(37, 99, 235, 0.18);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .filter-opt .check-icon {
+            display: none;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .filter-opt.active .check-icon {
+            display: inline;
+        }
+
+        /* Table Design & Custom Sleek Horizontal Scrollbar */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 rgba(255, 255, 255, 0.04);
+            padding-bottom: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 7px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            margin: 0 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            border-radius: 99px;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+            cursor: pointer;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
         }
 
         table {
@@ -846,6 +1073,294 @@
             height: 44px;
             opacity: 0.3;
             margin-bottom: 12px;
+        }
+
+        /* ===== SKELETON SHIMMER LOADING ===== */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-box {
+            display: inline-block;
+            height: 14px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .skeleton-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .rotating {
+            animation: spin 0.8s linear infinite !important;
+        }
+
+        /* ===== PAGINATION STYLING ===== */
+        .pagination-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .pagination-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .pagination-info strong {
+            color: #fff;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-page {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-page:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-page:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 4px;
+        }
+
+        .page-num {
+            min-width: 32px;
+            height: 32px;
+            padding: 0 6px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .page-num:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .page-num.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+        }
+
+        /* ===== MODAL EDITABLE FIELDS ===== */
+        .modal-field {
+            width: 100%;
+            background: rgba(14, 19, 32, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 9px 12px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .modal-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+            background: rgba(20, 27, 45, 0.95);
+        }
+
+        /* ===== CHECKBOX & BULK ACTIONS STYLING ===== */
+        .no-check-header,
+        .no-check-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 17px;
+            height: 17px;
+            border: 1.5px solid rgba(255, 255, 255, 0.28);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .custom-checkbox:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.12);
+        }
+
+        .custom-checkbox:checked {
+            background: #2563eb;
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.45);
+        }
+
+        .custom-checkbox:checked::after {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 8px;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            margin-bottom: 2px;
+        }
+
+        .custom-checkbox:indeterminate {
+            background: #2563eb;
+            border-color: #3b82f6;
+        }
+
+        .custom-checkbox:indeterminate::after {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 2px;
+            background: #fff;
+            border-radius: 1px;
+        }
+
+        tr.row-selected {
+            background: rgba(37, 99, 235, 0.1) !important;
+        }
+
+        tr.row-selected:hover {
+            background: rgba(37, 99, 235, 0.16) !important;
+        }
+
+        /* Floating / Sticky Bulk Action Bar */
+        .bulk-action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.6), 0 0 18px rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 10px 18px;
+            margin-bottom: 14px;
+            animation: slideDown 0.25s ease-out;
+            gap: 12px;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bulk-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .bulk-badge {
+            background: #2563eb;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 9px;
+            border-radius: 99px;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+        }
+
+        .bulk-btns {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-bulk-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-bulk-cancel:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-bulk-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fff;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-bulk-delete:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5);
+            transform: translateY(-1px);
         }
 
         /* ===== MODALS ===== */
@@ -1088,11 +1603,11 @@
             }
         }
 
-        /* Responsive Mobile Drawer */
+        /* ===== RESPONSIVE & MOBILE DRAWER STYLING ===== */
         .mobile-menu-btn {
             display: none;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
@@ -1100,30 +1615,286 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Tablet Breakpoint (max-width: 1100px) */
         @media (max-width: 1100px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
         }
 
+        /* Mobile Breakpoint (max-width: 768px) */
         @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            body.sidebar-open {
+                overflow: hidden !important;
+                touch-action: none;
+            }
+
+            /* Sidebar Drawer */
             .sidebar {
                 transform: translateX(-100%);
+                box-shadow: none;
+                width: 285px;
+                max-width: 86vw;
+                z-index: 100;
             }
+
             .sidebar.mobile-open {
                 transform: translateX(0);
+                box-shadow: 15px 0 50px rgba(0, 0, 0, 0.75), 0 0 25px rgba(59, 130, 246, 0.15);
             }
-            .main-wrapper {
-                margin-left: 0;
-                padding: 20px 16px;
+
+            .sidebar-backdrop {
+                z-index: 95;
             }
+
+            .sidebar-close-btn {
+                display: flex;
+            }
+
             .mobile-menu-btn {
                 display: flex;
             }
+
+            /* Main Content Container */
+            .main-wrapper {
+                margin-left: 0;
+                padding: 16px 14px;
+                padding-bottom: max(32px, env(safe-area-inset-bottom, 24px));
+                width: 100%;
+                min-height: 100dvh;
+            }
+
+            /* Topbar Mobile Stacking */
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .topbar-left {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .time-pill {
+                padding: 7px 12px;
+                font-size: 11px;
+            }
+
+            .topbar-right {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 9px;
+                width: 100%;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .search-box input {
+                padding: 10px 12px 10px 36px;
+                font-size: 13px;
+            }
+
+            .topbar-actions-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1.35fr;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .topbar-actions-row .btn-action {
+                justify-content: center;
+                padding: 9px 8px;
+                font-size: 12px;
+                white-space: nowrap;
+            }
+
+            /* Stats Grid */
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 14px;
+                margin-bottom: 22px;
+            }
+
+            .card-widget {
+                padding: 18px;
+                border-radius: 18px;
+            }
+
+            /* Table Section */
+            .table-section {
+                padding: 18px 14px;
+                border-radius: 18px;
+                margin-top: 18px;
+            }
+
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+
+            .table-title {
+                font-size: 15px;
+            }
+
+            .table-tools {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .table-responsive {
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 680px; /* Menjaga kolom tetap rapi dan tidak tergencet */
+            }
+
+            thead th {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+
+            tbody td {
+                padding: 12px;
+            }
+
+            /* Bulk Action Bar Mobile */
+            .bulk-action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 12px 14px;
+            }
+
+            .bulk-info {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .bulk-btns {
+                display: grid;
+                grid-template-columns: 1fr 1.4fr;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .btn-bulk-cancel,
+            .btn-bulk-delete {
+                justify-content: center;
+                text-align: center;
+                padding: 9px 12px;
+            }
+
+            /* Pagination Mobile */
+            .pagination-wrap {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .pagination-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 6px;
+            }
+
+            .btn-page {
+                padding: 7px 12px;
+            }
+
+            /* Modals Mobile Adaptation */
+            .modal-overlay {
+                padding: 14px;
+                align-items: center;
+            }
+
+            .modal-card {
+                padding: 22px 16px;
+                border-radius: 20px;
+                max-width: 96vw;
+                max-height: 90vh;
+                max-height: 90dvh;
+            }
+
+            .modal-close {
+                top: 16px;
+                right: 16px;
+            }
+
+            /* Login Screen Mobile Adaptation */
+            .login-overlay {
+                padding: 14px;
+            }
+
+            .login-box {
+                padding: 26px 18px;
+                border-radius: 22px;
+                max-width: 95vw;
+            }
+
+            .login-logo {
+                width: 52px;
+                height: 52px;
+                margin-bottom: 16px;
+            }
+
+            .login-title {
+                font-size: 19px;
+            }
+
+            .login-sub {
+                font-size: 12px;
+                margin-bottom: 22px;
+            }
+
+            .input-wrap input {
+                padding: 11px 12px 11px 36px;
+                font-size: 13px;
+            }
+
+            .btn-submit {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* Extra Compact Mobile (max-width: 480px, e.g. Infinix, Samsung Galaxy A, etc.) */
+        @media (max-width: 480px) {
+            .topbar-actions-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .topbar-actions-row .btn-primary {
+                grid-column: span 2;
+            }
+
+            .main-wrapper {
+                padding: 14px 10px;
             }
         }
     </style>
@@ -1177,26 +1948,42 @@
         </div>
     </div>
 
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- ===== SIDEBAR NAVIGATION ===== -->
     <aside class="sidebar" id="sidebar">
         <!-- Brand -->
         <div class="brand">
-            <div class="brand-icon">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            <div class="brand-left">
+                <div class="brand-icon">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>QR TTE Admin</h2>
+                    <span>Management Hub</span>
+                </div>
+            </div>
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" type="button" aria-label="Tutup Menu">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12"/>
                 </svg>
-            </div>
-            <div class="brand-text">
-                <h2>QR TTE Admin</h2>
-                <span>Management Hub</span>
-            </div>
+            </button>
         </div>
 
         <!-- User Profile Card (Reference Style) -->
         <div class="user-widget">
             <div class="user-widget-top">
-                <div class="user-avatar-wrap">
-                    <div class="user-avatar">W</div>
+                <div class="user-avatar-wrap" id="avatarWrap" title="Klik untuk ubah foto profil">
+                    <div class="user-avatar" id="sidebarAvatar">W</div>
+                    <div class="avatar-edit-badge">
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
                     <div class="user-status-dot"></div>
                 </div>
                 <div class="theme-toggle-dummy" title="Dark Mode Active">
@@ -1236,7 +2023,7 @@
                 </svg>
                 Portal Verifikasi ↗
             </a>
-            <a class="nav-item" id="btnLogout" style="margin-top:auto; color:#f87171;">
+            <a class="nav-item nav-item-logout" id="btnLogout">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
@@ -1247,10 +2034,10 @@
         <!-- Sidebar Bottom Banner -->
         <div class="sidebar-bottom-banner">
             <div class="banner-header">
-                <span class="pulse-dot"></span>
-                Google Sheets Live Sync
+                <span class="pulse-dot" id="syncDot"></span>
+                <span id="syncText">Google Sheets Live Sync</span>
             </div>
-            <div class="banner-text">Database cloud terhubung secara real-time ke Google Apps Script Web App.</div>
+            <div class="banner-text" id="syncSubtext">Database cloud terhubung secara real-time ke Google Apps Script Web App.</div>
         </div>
     </aside>
 
@@ -1259,7 +2046,7 @@
         <!-- Topbar -->
         <header class="topbar">
             <div class="topbar-left">
-                <button class="mobile-menu-btn" id="mobileMenuToggle">
+                <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Buka Menu Navigasi">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
@@ -1279,24 +2066,26 @@
                     </svg>
                     <input type="text" id="quickSearch" placeholder="Cari Nama / NIP / UUID...">
                 </div>
-                <button class="btn-action" id="btnRefresh" title="Muat ulang data dari Sheets">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                    </svg>
-                    Refresh
-                </button>
-                <button class="btn-action" id="btnExportCSV" title="Export seluruh data ke file CSV">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Export CSV
-                </button>
-                <a href="index.html" target="_blank" class="btn-action btn-primary">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Buat TTE Baru
-                </a>
+                <div class="topbar-actions-row">
+                    <button class="btn-action" id="btnRefresh" title="Muat ulang data dari Sheets">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>Refresh</span>
+                    </button>
+                    <button class="btn-action" id="btnExportCSV" title="Export seluruh data ke file CSV">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        <span>Export CSV</span>
+                    </button>
+                    <a href="index.html" target="_blank" class="btn-action btn-primary">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Buat TTE Baru</span>
+                    </a>
+                </div>
             </div>
         </header>
 
@@ -1411,12 +2200,53 @@
             <div class="table-header">
                 <h3 class="table-title">Daftar Tanda Tangan Elektronik Terdaftar</h3>
                 <div class="table-tools">
-                    <div class="table-filter-btn" id="filterStatusBtn">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                        </svg>
-                        <span id="filterLabel">Semua Data</span>
+                    <div class="filter-dropdown-wrap">
+                        <div class="table-filter-btn" id="filterStatusBtn" title="Atur jumlah data per halaman">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                            </svg>
+                            <span id="filterLabel">5 Data / Hal</span>
+                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-left: 2px; opacity: 0.7;">
+                                <path d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                        <div class="filter-dropdown-menu" id="filterDropdownMenu">
+                            <div class="filter-dropdown-title">Tampilkan Data</div>
+                            <div class="filter-opt active" data-val="5">
+                                <span>5 Data per Halaman</span>
+                                <span class="check-icon">✓</span>
+                            </div>
+                            <div class="filter-opt" data-val="10">
+                                <span>10 Data per Halaman</span>
+                                <span class="check-icon">✓</span>
+                            </div>
+                            <div class="filter-opt" data-val="25">
+                                <span>25 Data per Halaman</span>
+                                <span class="check-icon">✓</span>
+                            </div>
+                            <div class="filter-opt" data-val="all">
+                                <span>Tampilkan Semua Data</span>
+                                <span class="check-icon">✓</span>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Bulk Action Bar (Muncul saat ada item diceklis) -->
+            <div class="bulk-action-bar" id="bulkActionBar" style="display: none;">
+                <div class="bulk-info">
+                    <span class="bulk-badge" id="selectedCountBadge">0</span>
+                    <span>item TTE terpilih</span>
+                </div>
+                <div class="bulk-btns">
+                    <button class="btn-bulk-cancel" id="btnCancelBulkSelect" type="button">Batal Pilihan</button>
+                    <button class="btn-bulk-delete" id="btnBulkDelete" type="button">
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Hapus Sekaligus (<span id="btnDeleteCount">0</span>)
+                    </button>
                 </div>
             </div>
 
@@ -1424,7 +2254,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 50px;">No</th>
+                            <th style="width: 75px;">
+                                <div class="no-check-header">
+                                    <input type="checkbox" id="selectAllCheckbox" class="custom-checkbox" title="Pilih semua di halaman ini">
+                                    <span>No</span>
+                                </div>
+                            </th>
                             <th>Penandatangan</th>
                             <th>NIP</th>
                             <th>UUID</th>
@@ -1444,20 +2279,65 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-wrap" id="paginationWrap" style="display: none;">
+                <div class="pagination-info" id="paginationInfo">Menampilkan <strong>0 - 0</strong> dari <strong>0</strong> data</div>
+                <div class="pagination-buttons">
+                    <button class="btn-page" id="btnPrevPage">❮ Sebelumnya</button>
+                    <div class="page-numbers" id="pageNumbers"></div>
+                    <button class="btn-page" id="btnNextPage">Selanjutnya ❯</button>
+                </div>
+            </div>
         </section>
     </main>
 
-    <!-- ===== DETAIL & QR MODAL ===== -->
-    <div class="modal-overlay" id="detailModal">
-        <div class="modal-card">
+    <!-- ===== DETAIL & QR MODAL (DENGAN MODE EDIT ATRIBUT) ===== -->
+    <div class="modal-overlay" id="detailModal" onclick="closeModal('detailModal')">
+        <div class="modal-card" style="max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
             <div class="modal-close" onclick="closeModal('detailModal')">✕</div>
-            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px;" id="modalNama">Detail TTE</h3>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;" id="modalJabatan">Penata Layanan Operasional</p>
+            
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; padding-right: 36px; gap: 10px; flex-wrap: wrap;">
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 2px;" id="modalNama">Detail TTE</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);" id="modalJabatan">Penata Layanan Operasional</p>
+                </div>
+                <button class="btn-action" id="btnToggleEditMode" style="padding: 6px 12px; font-size: 11px; background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.35); color: #93c5fd; flex-shrink: 0;">
+                    ✏️ Edit Atribut
+                </button>
+            </div>
 
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;">
+            <!-- Edit Form Box (Muncul saat tombol Edit diklik) -->
+            <div id="editFormWrap" style="display: none; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 14px; padding: 16px; margin-bottom: 18px;">
+                <p style="font-size: 11px; font-weight: 700; color: #93c5fd; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Edit Atribut TTE</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div>
+                        <label style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Nama Lengkap</label>
+                        <input type="text" id="editInputNama" class="modal-field" placeholder="Nama Lengkap">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Jabatan</label>
+                        <input type="text" id="editInputJabatan" class="modal-field" placeholder="Jabatan">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">NIP</label>
+                        <input type="text" id="editInputNIP" class="modal-field" placeholder="NIP">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 14px;">
+                    <button class="btn-action btn-primary" id="btnSaveEdit" style="flex: 1; justify-content: center;">
+                        💾 Simpan Perubahan
+                    </button>
+                    <button class="btn-action" id="btnCancelEdit" style="padding: 8px 14px;">
+                        Batal
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 16px;">
                 <!-- QR Container -->
-                <div id="modalQRContainer" style="width: 200px; height: 200px; margin: 0 auto; background:#fff; border-radius:12px; padding:10px; display: flex; align-items: center; justify-content: center;"></div>
-                <div style="margin-top: 14px; display: flex; justify-content: center; gap: 8px;">
+                <div id="modalQRContainer" style="width: 190px; height: 190px; margin: 0 auto; background:#fff; border-radius:12px; padding:8px; display: flex; align-items: center; justify-content: center;"></div>
+                <div style="margin-top: 12px; display: flex; justify-content: center; gap: 8px;">
                     <button class="btn-action" id="btnDownloadModalQR">
                         📥 Download QR PNG
                     </button>
@@ -1474,7 +2354,7 @@
             </div>
 
             <!-- Signature Preview -->
-            <div id="modalTTDWrap" style="margin-top: 16px; background:#fff; border-radius: 12px; padding: 10px; text-align: center;">
+            <div id="modalTTDWrap" style="margin-top: 14px; background:#fff; border-radius: 12px; padding: 10px; text-align: center;">
                 <p style="font-size: 10px; color: #64748b; margin-bottom: 6px;">Pratinjau Tanda Tangan Asli:</p>
                 <img id="modalTTDImg" src="" alt="TTD" style="max-height: 80px; max-width: 100%; object-fit: contain;">
             </div>
@@ -1492,6 +2372,40 @@
         </div>
     </div>
 
+    <!-- ===== MODAL GANTI FOTO PROFIL ADMIN ===== -->
+    <div class="modal-overlay" id="avatarModal" onclick="closeModal('avatarModal')">
+        <div class="modal-card" style="max-width: 360px; text-align: center;" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal('avatarModal')">✕</div>
+            <h3 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 4px;">Foto Profil Admin</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Ubah foto profil untuk akun <strong style="color:#93c5fd;">si_wrwn</strong></p>
+
+            <div style="display: flex; justify-content: center; margin-bottom: 22px;">
+                <div style="position: relative; width: 88px; height: 88px;">
+                    <div id="avatarModalPreview" style="width: 88px; height: 88px; border-radius: 20px; background: linear-gradient(135deg, #1e3a8a, #3b82f6); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff; border: 2px solid rgba(59, 130, 246, 0.5); overflow: hidden; box-shadow: 0 0 20px rgba(59, 130, 246, 0.35);">
+                        W
+                    </div>
+                </div>
+            </div>
+
+            <input type="file" id="avatarFileInput" accept="image/png, image/jpeg, image/webp, image/gif" style="display: none;">
+
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+                <button class="btn-action btn-primary" id="btnChoosePhoto" type="button" style="justify-content: center; padding: 10px 16px; font-size: 13px;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Pilih Foto Baru
+                </button>
+                <button class="btn-action" id="btnDeletePhoto" type="button" style="justify-content: center; padding: 9px 16px; font-size: 12px; color: #f87171; border-color: rgba(239, 68, 68, 0.25); display: none;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Hapus Foto (Kembali ke Default)
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">
         <svg width="18" height="18" fill="none" stroke="#34d399" stroke-width="2" viewBox="0 0 24 24">
@@ -1502,7 +2416,7 @@
 
     <script>
         (() => {
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycby-1lCiolaitI4gC46o9tzFsgExXWijCF6EEmj12wG3uyJzeN72AZf8AAbq1e-y1PX3/exec';
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbyRw8ram6V3q0AoNpTK13gyUhxmodekDEkUNmnEF1gOtXd6HbsKektU4SDeGZjMyUhO/exec';
 
             // Kredensial Login
             const AUTH_USER = 'si_wrwn';
@@ -1533,6 +2447,8 @@
             const toastMsg = document.getElementById('toastMsg');
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
             const sidebar = document.getElementById('sidebar');
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+            const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
 
             // Format Tanggal Hari Ini
             const now = new Date();
@@ -1540,17 +2456,145 @@
             document.getElementById('sidebarDate').textContent = dateStr;
             document.getElementById('currentDateStr').textContent = now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
-            // Mobile Sidebar Toggle
-            mobileMenuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('mobile-open');
+            // Mobile Sidebar Drawer Management (Buka, Tutup, Overlay, Auto-Close)
+            function openMobileSidebar() {
+                if (!sidebar) return;
+                sidebar.classList.add('mobile-open');
+                if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+                document.body.classList.add('sidebar-open');
+            }
+
+            function closeMobileSidebar() {
+                if (!sidebar) return;
+                sidebar.classList.remove('mobile-open');
+                if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+                document.body.classList.remove('sidebar-open');
+            }
+
+            function toggleMobileSidebar() {
+                if (sidebar && sidebar.classList.contains('mobile-open')) {
+                    closeMobileSidebar();
+                } else {
+                    openMobileSidebar();
+                }
+            }
+
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleMobileSidebar();
+                });
+            }
+
+            if (sidebarCloseBtn) {
+                sidebarCloseBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeMobileSidebar();
+                });
+            }
+
+            if (sidebarBackdrop) {
+                sidebarBackdrop.addEventListener('click', () => {
+                    closeMobileSidebar();
+                });
+            }
+
+            // Menutup drawer saat item menu diklik pada tampilan seluler
+            const navItems = document.querySelectorAll('.nav-menu .nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        closeMobileSidebar();
+                    }
+                });
             });
+
+            // Menutup drawer saat tombol Escape ditekan
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('mobile-open')) {
+                    closeMobileSidebar();
+                }
+            });
+
+            // Otomatis menutup drawer jika ukuran layar diubah dari seluler ke desktop
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768 && sidebar && sidebar.classList.contains('mobile-open')) {
+                    closeMobileSidebar();
+                }
+            });
+
+            const CACHE_STORAGE_KEY = 'tte_records_cache_v1';
+            let isFetchingLive = false;
+
+            // Update indikator status sinkronisasi di sidebar bottom banner
+            function setSyncStatus(state, msg) {
+                const syncDot = document.getElementById('syncDot');
+                const syncText = document.getElementById('syncText');
+                const syncSubtext = document.getElementById('syncSubtext');
+
+                if (state === 'syncing') {
+                    if (syncDot) {
+                        syncDot.style.background = '#3b82f6';
+                        syncDot.style.boxShadow = '0 0 10px #3b82f6';
+                    }
+                    if (syncText) syncText.textContent = 'Menyinkronkan...';
+                    if (syncSubtext) syncSubtext.textContent = 'Memeriksa pembaruan data real-time di Google Sheets...';
+                } else if (state === 'synced') {
+                    if (syncDot) {
+                        syncDot.style.background = '#10b981';
+                        syncDot.style.boxShadow = '0 0 8px #10b981';
+                    }
+                    if (syncText) syncText.textContent = 'Live Sync Aktif';
+                    if (syncSubtext) syncSubtext.textContent = msg || 'Data terhubung dan tersinkronisasi secara real-time.';
+                } else if (state === 'cached') {
+                    if (syncDot) {
+                        syncDot.style.background = '#f59e0b';
+                        syncDot.style.boxShadow = '0 0 8px #f59e0b';
+                    }
+                    if (syncText) syncText.textContent = 'Data Tersimpan (Lokal)';
+                    if (syncSubtext) syncSubtext.textContent = msg || 'Menampilkan data tersimpan dari kunjungan sebelumnya.';
+                }
+            }
+
+            // Simpan data terbaru ke cache localStorage
+            function saveCacheData() {
+                try {
+                    localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(tteList));
+                } catch (e) {
+                    console.warn('Gagal menyimpan cache:', e);
+                }
+            }
+
+            // Muat data dari cache lokal (INSTAN 0 milidetik saat reload / buka halaman!)
+            function loadCachedData() {
+                try {
+                    const raw = localStorage.getItem(CACHE_STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            tteList = parsed;
+                            filteredList = [...tteList];
+                            updateStats();
+                            renderTable();
+                            setSyncStatus('cached', `Menampilkan ${parsed.length} data tersimpan dari cache lokal.`);
+                            return true;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Cache parsing error:', e);
+                }
+                return false;
+            }
 
             // ===== 1. AUTENTIKASI =====
             function checkAuth() {
                 const isLoggedIn = sessionStorage.getItem(AUTH_STORAGE_KEY) === 'true' || localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
                 if (isLoggedIn) {
                     loginOverlay.classList.add('hidden');
-                    loadDataFromSheets();
+                    // Langkah 1: Render INSTAN data dari cache lokal dalam 0 milidetik (tanpa spinner!)
+                    loadCachedData();
+                    // Langkah 2: Sinkronisasi data terbaru di latar belakang (background sync)
+                    loadDataFromSheets(false);
                 } else {
                     loginOverlay.classList.remove('hidden');
                 }
@@ -1566,7 +2610,8 @@
                     loginError.style.display = 'none';
                     loginOverlay.classList.add('hidden');
                     showToast('Selamat datang, si_wrwn!');
-                    loadDataFromSheets();
+                    loadCachedData();
+                    loadDataFromSheets(false);
                 } else {
                     loginError.style.display = 'block';
                     inputPass.value = '';
@@ -1582,9 +2627,36 @@
                 }
             });
 
-            // ===== 2. AMBIL DATA DARI GOOGLE SHEETS =====
-            async function loadDataFromSheets() {
-                renderLoading();
+            // Helper untuk mengonversi nilai apapun secara aman ke String
+            function str(val) {
+                if (val === null || val === undefined) return '';
+                return String(val).trim();
+            }
+
+            function getInitials(name) {
+                const s = str(name);
+                if (!s) return 'TT';
+                const parts = s.split(/\s+/).filter(Boolean);
+                if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+                return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+            }
+
+            // ===== 2. AMBIL DATA DARI GOOGLE SHEETS (STALE-WHILE-REVALIDATE) =====
+            async function loadDataFromSheets(isUserRefresh = false) {
+                if (isFetchingLive) return;
+                isFetchingLive = true;
+
+                const hasExistingData = tteList.length > 0;
+
+                // Jika belum ada data sama sekali di cache, tampilkan skeleton shimmer modern (bukan spinner kosong)
+                if (!hasExistingData) {
+                    renderSkeletonLoading();
+                }
+
+                // Indikator sinkronisasi halus
+                setSyncStatus('syncing');
+                const btnRefreshIcon = document.querySelector('#btnRefresh svg');
+                if (btnRefreshIcon) btnRefreshIcon.classList.add('rotating');
 
                 try {
                     const res = await fetch(`${GAS_URL}?action=getAll`);
@@ -1593,33 +2665,53 @@
                     if (json.status === 'success' && Array.isArray(json.data)) {
                         tteList = json.data;
                         filteredList = [...tteList];
-                        updateStats();
-                        renderTable();
+
+                        // Simpan ke cache lokal untuk kunjungan/reload berikutnya
+                        saveCacheData();
+
+                        try {
+                            updateStats();
+                            renderTable();
+                            setSyncStatus('synced', `Live Sync Aktif — ${tteList.length} data terverifikasi.`);
+                            if (isUserRefresh) {
+                                showToast('Data berhasil disinkronkan dengan Google Sheets!');
+                            }
+                        } catch (e) {
+                            console.error('Error rendering table after sync:', e);
+                        }
                     } else {
-                        // Jika deployment Apps Script belum di-update dengan action=getAll, tampilkan pesan ramah
                         console.warn('Backend response:', json);
-                        handleFallbackData();
+                        if (!hasExistingData) {
+                            handleFallbackData();
+                        } else {
+                            setSyncStatus('cached', 'Server sibuk, tetap menampilkan data tersimpan.');
+                        }
                     }
                 } catch (err) {
                     console.error('Fetch error:', err);
-                    handleFallbackData();
+                    if (!hasExistingData) {
+                        handleFallbackData();
+                    } else {
+                        setSyncStatus('cached', 'Koneksi offline/lambat, tetap menampilkan data tersimpan.');
+                    }
+                } finally {
+                    isFetchingLive = false;
+                    if (btnRefreshIcon) btnRefreshIcon.classList.remove('rotating');
                 }
             }
 
             function handleFallbackData() {
-                // Tampilkan pesan panduan bila Apps Script belum di-update ke versi terbaru
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="7" class="empty-state">
                             <svg fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24" style="color:#f59e0b; opacity:0.8;">
                                 <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
-                            <h4 style="font-size:15px; color:#fff; font-weight:700; margin-bottom:6px;">Menunggu Deployment Versi Baru di Apps Script</h4>
+                            <h4 style="font-size:15px; color:#fff; font-weight:700; margin-bottom:6px;">Gagal Mengambil Data Spreadsheet</h4>
                             <p style="font-size:12px; color:#94a3b8; max-width:480px; margin:0 auto 16px;">
-                                File <code>Code.gs</code> di repository telah dilengkapi endpoint <code>action=getAll</code>. 
-                                Silakan salin isi terbaru <code>Code.gs</code> ke editor Google Apps Script dan klik <strong>Deploy > New version</strong>.
+                                Pastikan koneksi internet stabil dan endpoint Apps Script merespon.
                             </p>
-                            <button class="btn-action btn-primary" onclick="loadDataFromSheets()" style="margin: 0 auto;">
+                            <button class="btn-action btn-primary" onclick="loadDataFromSheets(true)" style="margin: 0 auto;">
                                 🔄 Coba Hubungkan Ulang
                             </button>
                         </td>
@@ -1627,15 +2719,41 @@
                 `;
             }
 
-            function renderLoading() {
-                tableBody.innerHTML = `
+            function renderSkeletonLoading() {
+                const skeletonRows = Array(5).fill(0).map((_, i) => `
                     <tr>
-                        <td colspan="7" class="empty-state">
-                            <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(59,130,246,0.2); border-top-color:#3b82f6; border-radius:50%; animation: spin 0.8s linear infinite;"></div>
-                            <p style="margin-top: 12px; font-size: 13px; color:#94a3b8;">Memuat data TTE dari Google Sheets...</p>
+                        <td>
+                            <div class="no-check-cell">
+                                <div class="skeleton-box" style="width: 17px; height: 17px; border-radius: 5px;"></div>
+                                <span style="color:var(--text-muted); font-weight:600; min-width: 18px;">${i + 1}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="skeleton-avatar"></div>
+                                <div class="cell-info" style="gap: 6px; width: 140px;">
+                                    <div class="skeleton-box" style="width: 100%; height: 13px;"></div>
+                                    <div class="skeleton-box" style="width: 70%; height: 10px;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><div class="skeleton-box" style="width: 75px; height: 20px; border-radius: 6px;"></div></td>
+                        <td><div class="skeleton-box" style="width: 90px; height: 20px; border-radius: 6px;"></div></td>
+                        <td><div class="skeleton-box" style="width: 110px; height: 14px;"></div></td>
+                        <td><div class="skeleton-box" style="width: 44px; height: 26px; border-radius: 6px;"></div></td>
+                        <td>
+                            <div class="action-btns" style="justify-content: flex-end;">
+                                <div class="skeleton-box" style="width: 30px; height: 30px; border-radius: 8px;"></div>
+                                <div class="skeleton-box" style="width: 30px; height: 30px; border-radius: 8px;"></div>
+                                <div class="skeleton-box" style="width: 30px; height: 30px; border-radius: 8px;"></div>
+                            </div>
                         </td>
                     </tr>
-                `;
+                `).join('');
+
+                tableBody.innerHTML = skeletonRows;
+                const paginationWrap = document.getElementById('paginationWrap');
+                if (paginationWrap) paginationWrap.style.display = 'none';
             }
 
             // ===== 3. UPDATE METRIK STATISTIK =====
@@ -1644,18 +2762,265 @@
                 statTotalTTE.textContent = total;
                 navTotalCount.textContent = total;
 
-                // Hitung NIP unik
-                const uniqueNIPs = new Set(tteList.map(item => (item.nip || '').trim()).filter(Boolean));
+                // Hitung NIP unik secara aman
+                const uniqueNIPs = new Set(tteList.map(item => str(item.nip)).filter(Boolean));
                 statUniqueNIP.textContent = uniqueNIPs.size;
 
-                // Hitung Jabatan unik
-                const uniqueJobs = new Set(tteList.map(item => (item.jabatan || '').trim()).filter(Boolean));
+                // Hitung Jabatan unik secara aman
+                const uniqueJobs = new Set(tteList.map(item => str(item.jabatan)).filter(Boolean));
                 statUniqueJob.textContent = uniqueJobs.size;
             }
 
-            // ===== 4. RENDER TABEL =====
+            // ===== STATE PAGINATION, FILTER PAGE SIZE & SELEKSI CEKLIS =====
+            let currentFilterVal = localStorage.getItem('admin_page_size') || '5';
+            let PAGE_SIZE = currentFilterVal === 'all' ? 999999 : (parseInt(currentFilterVal, 10) || 5);
+            let currentPage = 1;
+
+            // ===== FILTER DROPDOWN PAGE SIZE =====
+            const filterStatusBtn = document.getElementById('filterStatusBtn');
+            const filterDropdownMenu = document.getElementById('filterDropdownMenu');
+            const filterLabel = document.getElementById('filterLabel');
+
+            function updateFilterUI(val) {
+                currentFilterVal = val;
+                PAGE_SIZE = val === 'all' ? 999999 : (parseInt(val, 10) || 5);
+                localStorage.setItem('admin_page_size', val);
+
+                if (filterLabel) {
+                    if (val === 'all') {
+                        filterLabel.textContent = 'Semua Data';
+                    } else {
+                        filterLabel.textContent = `${val} Data / Hal`;
+                    }
+                }
+
+                if (filterDropdownMenu) {
+                    const opts = filterDropdownMenu.querySelectorAll('.filter-opt');
+                    opts.forEach(opt => {
+                        if (opt.dataset.val === val) {
+                            opt.classList.add('active');
+                        } else {
+                            opt.classList.remove('active');
+                        }
+                    });
+                }
+            }
+
+            if (filterStatusBtn && filterDropdownMenu) {
+                filterStatusBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    filterDropdownMenu.classList.toggle('show');
+                });
+
+                const filterOpts = filterDropdownMenu.querySelectorAll('.filter-opt');
+                filterOpts.forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const val = opt.dataset.val;
+                        updateFilterUI(val);
+                        currentPage = 1;
+                        filterDropdownMenu.classList.remove('show');
+                        renderTable();
+                        showToast(`Menampilkan ${val === 'all' ? 'semua data' : val + ' data per halaman'}`);
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!filterStatusBtn.contains(e.target) && !filterDropdownMenu.contains(e.target)) {
+                        filterDropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            // Terapkan filter yang tersimpan
+            updateFilterUI(currentFilterVal);
+
+            // ===== PENGELOLAAN FOTO PROFIL ADMIN =====
+            const AVATAR_STORAGE_KEY = 'admin_custom_avatar';
+            const avatarWrap = document.getElementById('avatarWrap');
+            const sidebarAvatar = document.getElementById('sidebarAvatar');
+            const avatarModalPreview = document.getElementById('avatarModalPreview');
+            const avatarFileInput = document.getElementById('avatarFileInput');
+            const btnChoosePhoto = document.getElementById('btnChoosePhoto');
+            const btnDeletePhoto = document.getElementById('btnDeletePhoto');
+
+            function renderAvatarUI(dataUrl) {
+                if (dataUrl) {
+                    if (sidebarAvatar) {
+                        sidebarAvatar.innerHTML = `<img src="${dataUrl}" alt="Avatar Admin" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">`;
+                    }
+                    if (avatarModalPreview) {
+                        avatarModalPreview.innerHTML = `<img src="${dataUrl}" alt="Avatar Admin" style="width:100%; height:100%; object-fit:cover; border-radius:18px;">`;
+                    }
+                    if (btnDeletePhoto) {
+                        btnDeletePhoto.style.display = 'inline-flex';
+                    }
+                } else {
+                    if (sidebarAvatar) {
+                        sidebarAvatar.innerHTML = 'W';
+                    }
+                    if (avatarModalPreview) {
+                        avatarModalPreview.innerHTML = 'W';
+                    }
+                    if (btnDeletePhoto) {
+                        btnDeletePhoto.style.display = 'none';
+                    }
+                }
+            }
+
+            function initAdminAvatar() {
+                const savedAvatar = localStorage.getItem(AVATAR_STORAGE_KEY);
+                renderAvatarUI(savedAvatar);
+            }
+
+            if (avatarWrap) {
+                avatarWrap.addEventListener('click', () => {
+                    openModal('avatarModal');
+                });
+            }
+
+            if (btnChoosePhoto && avatarFileInput) {
+                btnChoosePhoto.addEventListener('click', () => {
+                    avatarFileInput.click();
+                });
+            }
+
+            if (avatarFileInput) {
+                avatarFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+
+                    if (!file.type.startsWith('image/')) {
+                        alert('Silakan pilih file gambar (JPG, PNG, WebP).');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (loadEvt) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const size = 200;
+                            canvas.width = size;
+                            canvas.height = size;
+                            const ctx = canvas.getContext('2d');
+
+                            const minSide = Math.min(img.width, img.height);
+                            const sx = (img.width - minSide) / 2;
+                            const sy = (img.height - minSide) / 2;
+
+                            ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+                            const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+                            try {
+                                localStorage.setItem(AVATAR_STORAGE_KEY, optimizedDataUrl);
+                                renderAvatarUI(optimizedDataUrl);
+                                closeModal('avatarModal');
+                                showToast('Foto profil admin berhasil diubah!');
+                            } catch (err) {
+                                console.error('Gagal menyimpan foto ke localStorage:', err);
+                                alert('Ukuran foto terlalu besar untuk disimpan di browser.');
+                            }
+                            avatarFileInput.value = '';
+                        };
+                        img.src = loadEvt.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            if (btnDeletePhoto) {
+                btnDeletePhoto.addEventListener('click', () => {
+                    localStorage.removeItem(AVATAR_STORAGE_KEY);
+                    renderAvatarUI(null);
+                    closeModal('avatarModal');
+                    showToast('Foto profil dikembalikan ke default.');
+                });
+            }
+            let currentModalItem = null;
+            let currentModalIndex = null;
+            let isEditMode = false;
+            let selectedUUIDs = new Set(); // Menyimpan UUID item yang diceklis
+
+            // Sinkronisasi status checkbox "Pilih Semua" (Select All)
+            function syncSelectAllCheckboxState() {
+                const selectAll = document.getElementById('selectAllCheckbox');
+                if (!selectAll) return;
+
+                const startIdx = (currentPage - 1) * PAGE_SIZE;
+                const endIdx = Math.min(startIdx + PAGE_SIZE, filteredList.length);
+                const currentPageUUIDs = filteredList.slice(startIdx, endIdx).map(i => str(i.uuid)).filter(Boolean);
+
+                if (currentPageUUIDs.length === 0) {
+                    selectAll.checked = false;
+                    selectAll.indeterminate = false;
+                    return;
+                }
+
+                const selectedOnPage = currentPageUUIDs.filter(id => selectedUUIDs.has(id));
+                if (selectedOnPage.length === currentPageUUIDs.length) {
+                    selectAll.checked = true;
+                    selectAll.indeterminate = false;
+                } else if (selectedOnPage.length > 0) {
+                    selectAll.checked = false;
+                    selectAll.indeterminate = true;
+                } else {
+                    selectAll.checked = false;
+                    selectAll.indeterminate = false;
+                }
+            }
+
+            // Tampilkan / Sembunyikan Bulk Action Bar
+            function updateBulkActionBar() {
+                const bulkActionBar = document.getElementById('bulkActionBar');
+                const selectedCountBadge = document.getElementById('selectedCountBadge');
+                const btnDeleteCount = document.getElementById('btnDeleteCount');
+
+                const count = selectedUUIDs.size;
+                if (count > 0) {
+                    if (selectedCountBadge) selectedCountBadge.textContent = count;
+                    if (btnDeleteCount) btnDeleteCount.textContent = count;
+                    if (bulkActionBar) bulkActionBar.style.display = 'flex';
+                } else {
+                    if (bulkActionBar) bulkActionBar.style.display = 'none';
+                }
+            }
+
+            // Handler ketika salah satu checkbox baris diklik
+            window.toggleRowSelect = (uuid, checkbox) => {
+                if (!uuid) return;
+                if (checkbox.checked) {
+                    selectedUUIDs.add(uuid);
+                } else {
+                    selectedUUIDs.delete(uuid);
+                }
+                const row = checkbox.closest('tr');
+                if (row) {
+                    row.classList.toggle('row-selected', checkbox.checked);
+                }
+                syncSelectAllCheckboxState();
+                updateBulkActionBar();
+            };
+
+            // Batalkan semua seleksi
+            window.clearSelection = () => {
+                selectedUUIDs.clear();
+                syncSelectAllCheckboxState();
+                updateBulkActionBar();
+                renderTable();
+            };
+
+            // ===== 4. RENDER TABEL DENGAN PAGINATION & CEKLIS =====
             function renderTable() {
-                if (filteredList.length === 0) {
+                const totalItems = filteredList.length;
+                const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
+
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+
+                const paginationWrap = document.getElementById('paginationWrap');
+
+                if (!filteredList || totalItems === 0) {
                     tableBody.innerHTML = `
                         <tr>
                             <td colspan="7" class="empty-state">
@@ -1666,65 +3031,226 @@
                             </td>
                         </tr>
                     `;
+                    if (paginationWrap) paginationWrap.style.display = 'none';
+                    syncSelectAllCheckboxState();
+                    updateBulkActionBar();
                     return;
                 }
 
-                tableBody.innerHTML = filteredList.map((item, idx) => {
-                    const initials = (item.nama || 'U').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-                    const hasTTD = item.ttdBase64 && item.ttdBase64.length > 20;
-                    const verifyURL = `verifikasi.html?id=${encodeURIComponent(item.uuid || '')}`;
+                if (paginationWrap) paginationWrap.style.display = 'flex';
+
+                const startIdx = (currentPage - 1) * PAGE_SIZE;
+                const endIdx = Math.min(startIdx + PAGE_SIZE, totalItems);
+                const pageItems = filteredList.slice(startIdx, endIdx);
+
+                // Update teks info pagination
+                document.getElementById('paginationInfo').innerHTML = `Menampilkan <strong>${startIdx + 1} - ${endIdx}</strong> dari <strong>${totalItems}</strong> data`;
+
+                // Render tombol halaman
+                renderPaginationButtons(totalPages);
+
+                tableBody.innerHTML = pageItems.map((item, idx) => {
+                    const itemActualIndex = startIdx + idx; // Global index di filteredList
+                    const namaStr = str(item.nama) || 'Tanpa Nama';
+                    const jabatanStr = str(item.jabatan) || '—';
+                    const nipStr = str(item.nip) || '—';
+                    const uuidStr = str(item.uuid);
+                    const timeStr = str(item.timestamp) || '—';
+                    const initials = getInitials(namaStr);
+                    const hasTTD = item.ttdBase64 && String(item.ttdBase64).length > 20;
+                    const verifyURL = `verifikasi.html?id=${encodeURIComponent(uuidStr)}`;
+                    const isSelected = selectedUUIDs.has(uuidStr);
 
                     return `
-                        <tr>
-                            <td style="color:var(--text-muted); font-weight:600;">${idx + 1}</td>
+                        <tr class="${isSelected ? 'row-selected' : ''}">
+                            <td>
+                                <div class="no-check-cell">
+                                    <input type="checkbox" class="row-checkbox custom-checkbox" data-uuid="${esc(uuidStr)}" ${isSelected ? 'checked' : ''} onchange="toggleRowSelect('${esc(uuidStr)}', this)">
+                                    <span style="color:var(--text-muted); font-weight:600; min-width: 18px;">${itemActualIndex + 1}</span>
+                                </div>
+                            </td>
                             <td>
                                 <div class="user-cell">
-                                    <div class="cell-avatar">${initials}</div>
+                                    <div class="cell-avatar">${esc(initials)}</div>
                                     <div class="cell-info">
-                                        <div class="name">${esc(item.nama)}</div>
-                                        <div class="job">${esc(item.jabatan)}</div>
+                                        <div class="name">${esc(namaStr)}</div>
+                                        <div class="job">${esc(jabatanStr)}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="nip-pill">${esc(item.nip)}</span></td>
+                            <td><span class="nip-pill">${esc(nipStr)}</span></td>
                             <td>
-                                <span class="uuid-pill" onclick="copyUUID('${esc(item.uuid)}') title="Klik untuk salin UUID">
-                                    ${esc((item.uuid || '').slice(0, 8))}...
+                                ${uuidStr ? `
+                                <span class="uuid-pill" onclick="copyUUID('${esc(uuidStr)}')" title="Klik untuk salin UUID">
+                                    ${esc(uuidStr.slice(0, 8))}...
                                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                     </svg>
-                                </span>
+                                </span>` : '—'}
                             </td>
-                            <td style="color:var(--text-secondary); font-size:12px;">${esc(item.timestamp)}</td>
+                            <td style="color:var(--text-secondary); font-size:12px;">${esc(timeStr)}</td>
                             <td>
                                 ${hasTTD ? `
-                                    <img src="${item.ttdBase64}" class="ttd-thumb" alt="TTD" title="Klik untuk perbesar" onclick="zoomTTD('${item.ttdBase64}', '${esc(item.nama)}')">
+                                    <img src="${item.ttdBase64}" class="ttd-thumb" alt="TTD" title="Klik untuk perbesar" onclick="zoomTTD('${item.ttdBase64}', '${esc(namaStr)}')">
                                 ` : '<span style="color:var(--text-muted); font-size:11px;">Tidak ada</span>'}
                             </td>
                             <td>
                                 <div class="action-btns" style="justify-content: flex-end;">
-                                    <button class="btn-icon-tbl" title="Lihat QR & Detail" onclick="openDetailModal(${idx})">
+                                    <button class="btn-icon-tbl" title="Lihat QR & Edit Detail" onclick="openDetailModal(${itemActualIndex})">
                                         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                         </svg>
                                     </button>
+                                    ${uuidStr ? `
                                     <a href="${verifyURL}" target="_blank" class="btn-icon-tbl" title="Buka Halaman Verifikasi">
                                         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                                         </svg>
-                                    </a>
-                                    <button class="btn-icon-tbl delete" title="Hapus TTE" onclick="deleteTTE('${esc(item.uuid)}', '${esc(item.nama)}')">
+                                    </a>` : ''}
+                                    ${uuidStr ? `
+                                    <button class="btn-icon-tbl delete" title="Hapus TTE" onclick="deleteTTE('${esc(uuidStr)}', '${esc(namaStr)}')">
                                         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                         </svg>
-                                    </button>
+                                    </button>` : ''}
                                 </div>
                             </td>
                         </tr>
                     `;
                 }).join('');
+
+                syncSelectAllCheckboxState();
+                updateBulkActionBar();
             }
+
+            // Render tombol pagination nomor
+            function renderPaginationButtons(totalPages) {
+                const btnPrev = document.getElementById('btnPrevPage');
+                const btnNext = document.getElementById('btnNextPage');
+                const pageNumbers = document.getElementById('pageNumbers');
+
+                btnPrev.disabled = currentPage <= 1;
+                btnNext.disabled = currentPage >= totalPages;
+
+                let numsHtml = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                        numsHtml += `<button class="page-num ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                    } else if (i === currentPage - 2 || i === currentPage + 2) {
+                        numsHtml += `<span style="color:var(--text-muted); padding:4px;">...</span>`;
+                    }
+                }
+                pageNumbers.innerHTML = numsHtml;
+            }
+
+            window.goToPage = (page) => {
+                currentPage = page;
+                renderTable();
+            };
+
+            document.getElementById('btnPrevPage').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+
+            document.getElementById('btnNextPage').addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredList.length / PAGE_SIZE) || 1;
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+
+            // ===== EVENT LISTENER SELEKSI SEMUA & BULK DELETE =====
+            document.getElementById('selectAllCheckbox').addEventListener('change', (e) => {
+                const checked = e.target.checked;
+                const startIdx = (currentPage - 1) * PAGE_SIZE;
+                const endIdx = Math.min(startIdx + PAGE_SIZE, filteredList.length);
+                const pageItems = filteredList.slice(startIdx, endIdx);
+
+                pageItems.forEach(item => {
+                    const id = str(item.uuid);
+                    if (id) {
+                        if (checked) selectedUUIDs.add(id);
+                        else selectedUUIDs.delete(id);
+                    }
+                });
+
+                renderTable();
+            });
+
+            document.getElementById('btnCancelBulkSelect').addEventListener('click', clearSelection);
+
+            document.getElementById('btnBulkDelete').addEventListener('click', async () => {
+                const count = selectedUUIDs.size;
+                if (count === 0) return;
+
+                if (!confirm(`Hapus ${count} data TTE yang dipilih?\nData akan dihapus secara permanen dari Google Sheets.`)) {
+                    return;
+                }
+
+                const uuidsToDelete = Array.from(selectedUUIDs);
+                showToast(`Menghapus ${count} data TTE...`);
+
+                const btn = document.getElementById('btnBulkDelete');
+                const origText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `
+                    <div style="display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation: spin 0.8s linear infinite;"></div>
+                    Menghapus (${count})...
+                `;
+
+                try {
+                    // Coba request bulkDelete terlebih dahulu
+                    const res = await fetch(GAS_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'bulkDelete', uuids: uuidsToDelete })
+                    });
+                    const json = await res.json();
+
+                    let isSuccess = json.status === 'success';
+
+                    // Fallback otomatis: jika Apps Script belum di-deploy ulang oleh user, lakukan hapus satu-persatu via Promise.all
+                    if (!isSuccess) {
+                        console.warn('bulkDelete endpoint tidak merespon, menjalankan fallback penghapusan individual:', json);
+                        const promises = uuidsToDelete.map(u =>
+                            fetch(GAS_URL, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({ action: 'delete', uuid: u })
+                            }).then(r => r.json()).catch(() => null)
+                        );
+                        await Promise.all(promises);
+                        isSuccess = true;
+                    }
+
+                    if (isSuccess) {
+                        showToast(`${count} data TTE berhasil dihapus!`);
+
+                        // Hapus dari state lokal
+                        tteList = tteList.filter(i => !selectedUUIDs.has(str(i.uuid)));
+                        filteredList = filteredList.filter(i => !selectedUUIDs.has(str(i.uuid)));
+
+                        selectedUUIDs.clear();
+                        updateBulkActionBar();
+                        updateStats();
+                        renderTable();
+                        saveCacheData();
+                    } else {
+                        alert(json.message || 'Gagal menghapus data TTE.');
+                    }
+                } catch (err) {
+                    console.error('Bulk delete error:', err);
+                    alert('Gagal menghubungi server Google Apps Script.');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = origText;
+                }
+            });
 
             // ===== 5. PENCARIAN CEPAT =====
             quickSearch.addEventListener('input', (e) => {
@@ -1733,27 +3259,47 @@
                     filteredList = [...tteList];
                 } else {
                     filteredList = tteList.filter(item => {
-                        return (item.nama || '').toLowerCase().includes(query) ||
-                               (item.nip || '').toLowerCase().includes(query) ||
-                               (item.jabatan || '').toLowerCase().includes(query) ||
-                               (item.uuid || '').toLowerCase().includes(query);
+                        return str(item.nama).toLowerCase().includes(query) ||
+                               str(item.nip).toLowerCase().includes(query) ||
+                               str(item.jabatan).toLowerCase().includes(query) ||
+                               str(item.uuid).toLowerCase().includes(query);
                     });
                 }
+                currentPage = 1; // Reset ke halaman 1 saat pencarian
                 renderTable();
             });
 
-            // ===== 6. DETAIL & QR MODAL =====
+            // ===== 6. DETAIL & QR MODAL (DENGAN FITUR EDIT ATRIBUT) =====
+            const editFormWrap = document.getElementById('editFormWrap');
+            const btnToggleEditMode = document.getElementById('btnToggleEditMode');
+            const btnSaveEdit = document.getElementById('btnSaveEdit');
+            const btnCancelEdit = document.getElementById('btnCancelEdit');
+
             window.openDetailModal = (idx) => {
                 const item = filteredList[idx];
                 if (!item) return;
 
-                document.getElementById('modalNama').textContent = item.nama;
-                document.getElementById('modalJabatan').textContent = item.jabatan;
-                document.getElementById('modalNIP').textContent = item.nip;
-                document.getElementById('modalUUID').textContent = item.uuid;
-                document.getElementById('modalTimestamp').textContent = item.timestamp;
+                currentModalItem = item;
+                currentModalIndex = idx;
+                isEditMode = false;
 
-                const hasTTD = item.ttdBase64 && item.ttdBase64.length > 20;
+                // Reset display form edit
+                editFormWrap.style.display = 'none';
+                btnToggleEditMode.textContent = '✏️ Edit Atribut';
+
+                // Set teks preview detail
+                document.getElementById('modalNama').textContent = str(item.nama) || 'Tanpa Nama';
+                document.getElementById('modalJabatan').textContent = str(item.jabatan) || '—';
+                document.getElementById('modalNIP').textContent = str(item.nip) || '—';
+                document.getElementById('modalUUID').textContent = str(item.uuid) || '—';
+                document.getElementById('modalTimestamp').textContent = str(item.timestamp) || '—';
+
+                // Set nilai input form edit
+                document.getElementById('editInputNama').value = str(item.nama);
+                document.getElementById('editInputJabatan').value = str(item.jabatan);
+                document.getElementById('editInputNIP').value = str(item.nip);
+
+                const hasTTD = item.ttdBase64 && String(item.ttdBase64).length > 20;
                 const ttdWrap = document.getElementById('modalTTDWrap');
                 const ttdImg = document.getElementById('modalTTDImg');
                 if (hasTTD) {
@@ -1765,7 +3311,7 @@
 
                 // URL Verifikasi
                 const baseURL = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
-                const verifyURL = `${baseURL}/verifikasi.html?id=${encodeURIComponent(item.uuid)}`;
+                const verifyURL = `${baseURL}/verifikasi.html?id=${encodeURIComponent(str(item.uuid))}`;
                 document.getElementById('btnOpenModalVerify').href = verifyURL;
 
                 // Render QR Code di Modal
@@ -1777,7 +3323,7 @@
                     height: 180,
                     type: "canvas",
                     data: verifyURL,
-                    margin: 10,
+                    margin: 8,
                     qrOptions: { errorCorrectionLevel: "H" },
                     dotsOptions: { color: "#001f5b", type: "rounded" },
                     backgroundOptions: { color: "#ffffff" },
@@ -1787,11 +3333,109 @@
 
                 // Download QR
                 document.getElementById('btnDownloadModalQR').onclick = () => {
-                    currentModalQR.download({ name: `QR_TTE_${item.nip || 'User'}`, extension: "png" });
+                    currentModalQR.download({ name: `QR_TTE_${str(item.nip) || 'User'}`, extension: "png" });
                 };
 
                 openModal('detailModal');
             };
+
+            // Toggle Mode Edit di Modal
+            btnToggleEditMode.addEventListener('click', () => {
+                isEditMode = !isEditMode;
+                if (isEditMode) {
+                    editFormWrap.style.display = 'block';
+                    btnToggleEditMode.textContent = '✕ Batal Edit';
+                    document.getElementById('editInputNama').focus();
+                } else {
+                    editFormWrap.style.display = 'none';
+                    btnToggleEditMode.textContent = '✏️ Edit Atribut';
+                }
+            });
+
+            btnCancelEdit.addEventListener('click', () => {
+                isEditMode = false;
+                editFormWrap.style.display = 'none';
+                btnToggleEditMode.textContent = '✏️ Edit Atribut';
+                if (currentModalItem) {
+                    document.getElementById('editInputNama').value = str(currentModalItem.nama);
+                    document.getElementById('editInputJabatan').value = str(currentModalItem.jabatan);
+                    document.getElementById('editInputNIP').value = str(currentModalItem.nip);
+                }
+            });
+
+            // Simpan Perubahan Atribut ke Google Sheets
+            btnSaveEdit.addEventListener('click', async () => {
+                if (!currentModalItem || !currentModalItem.uuid) return;
+
+                const newNama = document.getElementById('editInputNama').value.trim();
+                const newJabatan = document.getElementById('editInputJabatan').value.trim();
+                const newNIP = document.getElementById('editInputNIP').value.trim();
+
+                if (!newNama) {
+                    alert('Nama lengkap tidak boleh kosong.');
+                    return;
+                }
+
+                const origBtnText = btnSaveEdit.textContent;
+                btnSaveEdit.disabled = true;
+                btnSaveEdit.textContent = 'Menyimpan ke Sheets...';
+
+                const payload = {
+                    action: 'update',
+                    uuid: currentModalItem.uuid,
+                    nama: newNama,
+                    jabatan: newJabatan,
+                    nip: newNIP
+                };
+
+                try {
+                    const res = await fetch(GAS_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+                    const json = await res.json();
+
+                    if (json.status === 'success') {
+                        // Perbarui data di state memori
+                        currentModalItem.nama = newNama;
+                        currentModalItem.jabatan = newJabatan;
+                        currentModalItem.nip = newNIP;
+
+                        const itemInList = tteList.find(i => str(i.uuid) === str(currentModalItem.uuid));
+                        if (itemInList) {
+                            itemInList.nama = newNama;
+                            itemInList.jabatan = newJabatan;
+                            itemInList.nip = newNIP;
+                        }
+
+                        // Perbarui teks di modal
+                        document.getElementById('modalNama').textContent = newNama;
+                        document.getElementById('modalJabatan').textContent = newJabatan || '—';
+                        document.getElementById('modalNIP').textContent = newNIP || '—';
+
+                        // Tutup form edit
+                        isEditMode = false;
+                        editFormWrap.style.display = 'none';
+                        btnToggleEditMode.textContent = '✏️ Edit Atribut';
+
+                        // Perbarui tampilan tabel dan statistik
+                        updateStats();
+                        renderTable();
+                        saveCacheData();
+
+                        showToast(`Atribut ${newNama} berhasil diperbarui!`);
+                    } else {
+                        alert(json.message || 'Gagal menyimpan perubahan ke Google Sheets.');
+                    }
+                } catch (err) {
+                    console.error('Update error:', err);
+                    alert('Terjadi kesalahan koneksi ke Google Apps Script.');
+                } finally {
+                    btnSaveEdit.disabled = false;
+                    btnSaveEdit.textContent = origBtnText;
+                }
+            });
 
             // ===== 7. ZOOM TTD =====
             window.zoomTTD = (src, nama) => {
@@ -1815,14 +3459,16 @@
                         body: JSON.stringify({ action: 'delete', uuid: uuid })
                     });
                     const json = await res.json();
-
                     if (json.status === 'success') {
                         showToast(`Data ${nama} berhasil dihapus!`);
                         // Hapus dari state lokal
-                        tteList = tteList.filter(i => i.uuid !== uuid);
-                        filteredList = filteredList.filter(i => i.uuid !== uuid);
+                        tteList = tteList.filter(i => str(i.uuid) !== str(uuid));
+                        filteredList = filteredList.filter(i => str(i.uuid) !== str(uuid));
+                        selectedUUIDs.delete(str(uuid));
+                        updateBulkActionBar();
                         updateStats();
                         renderTable();
+                        saveCacheData();
                     } else {
                         alert(json.message || 'Gagal menghapus data.');
                     }
@@ -1861,8 +3507,8 @@
 
             // Refresh Button
             btnRefresh.addEventListener('click', () => {
-                showToast('Memperbarui data...');
-                loadDataFromSheets();
+                showToast('Menyinkronkan data...');
+                loadDataFromSheets(true);
             });
 
             // Modal Helper
@@ -1893,7 +3539,8 @@
                 return el.innerHTML;
             }
 
-            // Jalankan Pemeriksaan Auth saat halaman dibuka
+            // Jalankan Pemeriksaan Auth & Inisialisasi Avatar saat halaman dibuka
+            initAdminAvatar();
             checkAuth();
         })();
     </script>

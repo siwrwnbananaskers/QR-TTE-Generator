@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi TTE</title>
+    <title>Verifikasi TTE — Tanda Tangan Elektronik</title>
     <meta name="description" content="Halaman verifikasi Tanda Tangan Elektronik berbasis QR Code.">
     <link rel="icon" type="image/png" href="./favicon.png">
     <!-- Open Graph / Social Preview -->
@@ -33,244 +33,163 @@
             background: linear-gradient(135deg, #06132b, #001f5b);
             color: #fff;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* ===== LOADING STATE ===== */
-        .loading-wrap {
+        /* Ambient Glow */
+        .bg-glow {
             position: fixed;
             inset: 0;
-            z-index: 200;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #06132b, #001f5b);
-            gap: 16px;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
         }
 
-        .loading-wrap.hide {
-            display: none;
-        }
-
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(197, 219, 36, .2);
-            border-top-color: #c5db24;
-            border-radius: 50%;
-            animation: spin .8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading-wrap p {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-
-        /* ===== ZOOM-OUT TTD OVERLAY ===== */
-        .ttd-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #06132b, #001f5b);
-            animation: overlayFade 3.5s ease-in-out forwards;
-        }
-
-        .ttd-overlay.hide {
-            display: none;
-        }
-
-        .ttd-overlay img {
-            max-width: 90vw;
-            max-height: 80vh;
-            object-fit: contain;
-            animation: zoomOut 3s cubic-bezier(.22, .61, .36, 1) forwards;
-            filter: drop-shadow(0 0 60px rgba(99, 102, 241, .3));
-        }
-
-        @keyframes zoomOut {
-            0% {
-                transform: scale(3.5);
-                opacity: 0;
-            }
-
-            12% {
-                opacity: 1;
-            }
-
-            55% {
-                transform: scale(1.05);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes overlayFade {
-
-            0%,
-            75% {
-                opacity: 1;
-                pointer-events: all;
-            }
-
-            100% {
-                opacity: 0;
-                pointer-events: none;
-            }
-        }
-
-        .ttd-overlay .verified-flash {
+        .bg-glow-1 {
             position: absolute;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #c5db24;
-            opacity: 0;
-            animation: flashIn 3.5s ease forwards;
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            border-radius: 50%;
+            background: rgba(0, 102, 204, 0.15);
+            filter: blur(120px);
         }
 
-        @keyframes flashIn {
-
-            0%,
-            35% {
-                opacity: 0;
-                transform: translateX(-50%) translateY(10px);
-            }
-
-            50% {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-
-            100% {
-                opacity: 0;
-            }
+        .bg-glow-2 {
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            border-radius: 50%;
+            background: rgba(197, 219, 36, 0.12);
+            filter: blur(120px);
         }
 
-        /* ===== MAIN CONTENT ===== */
+        /* Container */
         .main-wrap {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            animation: contentIn .8s ease-out 3.2s forwards;
-        }
-
-        .main-wrap.instant {
-            opacity: 1;
-            animation: none;
-        }
-
-        @keyframes contentIn {
-            to {
-                opacity: 1;
-            }
+            padding: 24px 16px;
+            position: relative;
+            z-index: 1;
         }
 
         .card {
             background: rgba(255, 255, 255, .05);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, .1);
             border-radius: 24px;
-            padding: 40px;
+            padding: 36px 28px;
             max-width: 480px;
             width: 100%;
             text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.25s ease-out forwards;
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Badges */
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             padding: 6px 14px;
             border-radius: 99px;
             margin-bottom: 20px;
+            text-transform: uppercase;
         }
 
         .badge.valid {
             background: rgba(197, 219, 36, .12);
-            border: 1px solid rgba(197, 219, 36, .25);
+            border: 1px solid rgba(197, 219, 36, .3);
             color: #c5db24;
+        }
+
+        .badge.loading {
+            background: rgba(0, 102, 204, .15);
+            border: 1px solid rgba(0, 102, 204, .35);
+            color: #60a5fa;
         }
 
         .badge.invalid {
             background: rgba(239, 68, 68, .12);
-            border: 1px solid rgba(239, 68, 68, .25);
+            border: 1px solid rgba(239, 68, 68, .3);
             color: #f87171;
         }
 
         .status-icon {
-            width: 56px;
-            height: 56px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 16px;
+            transition: transform 0.2s ease;
         }
 
         .status-icon.valid {
             background: linear-gradient(135deg, #c5db24, #9db416);
-            box-shadow: 0 0 30px rgba(197, 219, 36, .3);
+            box-shadow: 0 0 28px rgba(197, 219, 36, .35);
         }
 
         .status-icon.invalid {
             background: linear-gradient(135deg, #ef4444, #dc2626);
-            box-shadow: 0 0 30px rgba(239, 68, 68, .3);
+            box-shadow: 0 0 28px rgba(239, 68, 68, .35);
         }
 
         .status-icon svg {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             stroke: #fff;
             fill: none;
             stroke-width: 3;
         }
 
         h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
+            font-size: 21px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
         }
 
         .sub {
             font-size: 13px;
             color: #94a3b8;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
+            line-height: 1.4;
         }
 
-        /* TTD inside card */
+        /* TTD Display inside card */
         .ttd-card {
             background: rgba(255, 255, 255, .95);
             border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, .15);
+            padding: 16px 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .2);
         }
 
         .ttd-card img {
             max-width: 100%;
-            max-height: 160px;
+            max-height: 130px;
             object-fit: contain;
             display: block;
             margin: 0 auto;
@@ -278,25 +197,30 @@
 
         .ttd-card .ttd-label {
             font-size: 11px;
-            color: #64748b;
+            color: #475569;
             margin-top: 8px;
-            letter-spacing: 0.5px;
+            font-weight: 500;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+            padding-top: 6px;
         }
 
+        /* Info rows */
         .info {
             text-align: left;
             background: rgba(255, 255, 255, .04);
             border: 1px solid rgba(255, 255, 255, .08);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 14px 16px;
             font-size: 13px;
         }
 
         .row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, .06);
+            gap: 12px;
         }
 
         .row:last-child {
@@ -306,18 +230,20 @@
         .label {
             color: #64748b;
             font-weight: 500;
+            font-size: 12px;
+            flex-shrink: 0;
         }
 
         .value {
             color: #e2e8f0;
             font-weight: 600;
             text-align: right;
-            max-width: 60%;
-            word-break: break-all;
+            word-break: break-word;
+            font-size: 13px;
         }
 
         .footer-text {
-            margin-top: 24px;
+            margin-top: 22px;
             font-size: 11px;
             color: #475569;
         }
@@ -339,139 +265,267 @@
             border: 1px solid rgba(255, 255, 255, .08);
             border-radius: 8px;
             padding: 10px;
-            font-size: 11px;
+            font-size: 12px;
             font-family: monospace;
-            color: #64748b;
+            color: #94a3b8;
             word-break: break-all;
+            margin-bottom: 12px;
+        }
+
+        .btn-retry {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-retry:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* ===== SKELETON LOADER (TAMPIL INSTAN) ===== */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .mini-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(96, 165, 250, .3);
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 
 <body>
-
-    <!-- LOADING -->
-    <div class="loading-wrap" id="loadingWrap">
-        <div class="loader"></div>
-        <p>Memverifikasi Tanda Tangan Elektronik...</p>
+    <!-- Ambient Backdrop -->
+    <div class="bg-glow">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
     </div>
 
-    <!-- TTD ZOOM-OUT OVERLAY (populated by JS) -->
-    <div class="ttd-overlay hide" id="ttdOverlay">
-        <img id="overlayImg" src="" alt="Tanda Tangan">
-        <div class="verified-flash">✓ Tanda Tangan Terverifikasi</div>
-    </div>
-
-    <!-- MAIN CONTENT (populated by JS) -->
-    <div class="main-wrap instant" id="mainWrap">
+    <!-- MAIN CONTAINER -->
+    <main class="main-wrap">
         <div class="card" id="cardContent">
-            <!-- JS will populate this -->
+            <!-- Konten diisi secara instan oleh JS -->
         </div>
-    </div>
+    </main>
 
     <script>
-        (async () => {
+        (() => {
             const GAS_URL = 'https://script.google.com/macros/s/AKfycbwZNiQtyBHqqXMOINVkXYzQhxggZKiwc_WkqzUhWJ5sSrHbCoqLimR6Q22hFSMkBySd/exec';
 
             const params = new URLSearchParams(window.location.search);
-            const uuid = params.get('id');
-
-            const loadingWrap = document.getElementById('loadingWrap');
-            const ttdOverlay = document.getElementById('ttdOverlay');
-            const overlayImg = document.getElementById('overlayImg');
-            const mainWrap = document.getElementById('mainWrap');
+            const uuid = (params.get('id') || '').trim();
             const cardContent = document.getElementById('cardContent');
 
-            // No UUID provided
+            // 1. Kasus: Tidak ada parameter ID
             if (!uuid) {
-                loadingWrap.classList.add('hide');
-                cardContent.innerHTML = `
-                <h1>🔐 QR TTE Verifier</h1>
-                <p class="sub" style="margin-top:12px">Scan QR Code TTE untuk memverifikasi keaslian tanda tangan elektronik.</p>
-            `;
+                renderNoUUID();
                 return;
             }
 
-            // Fetch data from GAS
-            try {
-                const res = await fetch(`${GAS_URL}?id=${encodeURIComponent(uuid)}`);
-                const data = await res.json();
+            // 2. Cek Cache Cepat (SessionStorage) agar tampil dalam 0ms jika sebelumnya sudah pernah discan
+            const cacheKey = 'tte_' + uuid;
+            const cachedData = sessionStorage.getItem(cacheKey);
+            if (cachedData) {
+                try {
+                    const parsed = JSON.parse(cachedData);
+                    renderVerified(parsed);
+                    return;
+                } catch (e) {
+                    sessionStorage.removeItem(cacheKey);
+                }
+            }
 
-                loadingWrap.classList.add('hide');
+            // 3. Tampilkan Skeleton Instan (User langsung melihat layout, tidak menunggu layar kosong)
+            renderSkeleton(uuid);
 
-                if (data.status === 'found') {
-                    const d = data.data;
-                    const hasTTD = d.ttdBase64 && d.ttdBase64.length > 10;
+            // 4. Fetch data dari backend Google Apps Script
+            fetchVerificationData(uuid);
 
-                    // === ZOOM-OUT ANIMATION ===
-                    if (hasTTD) {
-                        overlayImg.src = d.ttdBase64;
-                        ttdOverlay.classList.remove('hide');
-                        mainWrap.classList.remove('instant');
-                        mainWrap.style.opacity = '0';
-                        mainWrap.style.animation = 'contentIn .8s ease-out 3.2s forwards';
-                        // Remove overlay after animation
-                        setTimeout(() => { ttdOverlay.remove(); }, 4000);
+            async function fetchVerificationData(id) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 detik timeout
+
+                    const res = await fetch(`${GAS_URL}?id=${encodeURIComponent(id)}`, {
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    const data = await res.json();
+
+                    if (data.status === 'found' && data.data) {
+                        // Simpan ke cache untuk percepatan instan berikutnya
+                        try {
+                            sessionStorage.setItem(cacheKey, JSON.stringify(data.data));
+                        } catch (err) {
+                            // Abaikan jika quota sessionStorage penuh
+                        }
+                        renderVerified(data.data);
+                    } else {
+                        renderNotFound(id);
                     }
+                } catch (err) {
+                    renderError(id, err.name === 'AbortError' ? 'Koneksi waktu habis (Timeout). Silakan periksa internet Anda.' : 'Gagal menghubungi server verifikasi.');
+                }
+            }
 
-                    // === BUILD CARD ===
-                    cardContent.innerHTML = `
-                    <div class="badge valid">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                        TERVERIFIKASI
+            // Render: Skeleton Loading (Instan saat halaman terbuka)
+            function renderSkeleton(id) {
+                cardContent.innerHTML = `
+                    <div class="badge loading">
+                        <div class="mini-spinner"></div>
+                        <span>Memverifikasi TTE...</span>
                     </div>
-                    <div class="status-icon valid"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+                    <div class="status-icon skeleton" style="border-radius:50%; width:54px; height:54px; margin:0 auto 16px;"></div>
+                    <div class="skeleton" style="height:24px; width:65%; margin:0 auto 8px;"></div>
+                    <div class="skeleton" style="height:14px; width:80%; margin:0 auto 22px;"></div>
+                    
+                    <div class="ttd-card" style="padding: 24px 20px;">
+                        <div class="skeleton" style="height:70px; width:60%; margin:0 auto 8px; border-radius:10px;"></div>
+                        <div class="skeleton" style="height:10px; width:40%; margin:0 auto;"></div>
+                    </div>
+
+                    <div class="info">
+                        <div class="row"><span class="label">Nama</span><div class="skeleton" style="height:14px; width:130px;"></div></div>
+                        <div class="row"><span class="label">Jabatan</span><div class="skeleton" style="height:14px; width:110px;"></div></div>
+                        <div class="row"><span class="label">NIP</span><div class="skeleton" style="height:14px; width:90px;"></div></div>
+                        <div class="row"><span class="label">UUID</span><div class="skeleton" style="height:14px; width:140px;"></div></div>
+                        <div class="row"><span class="label">Timestamp</span><div class="skeleton" style="height:14px; width:120px;"></div></div>
+                    </div>
+
+                    <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
+                `;
+            }
+
+            // Render: Terverifikasi (Tampil Segera Begitu Data Tersedia)
+            function renderVerified(d) {
+                const hasTTD = d.ttdBase64 && d.ttdBase64.length > 10;
+                cardContent.innerHTML = `
+                    <div class="badge valid">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        TERVERIFIKASI RESMI
+                    </div>
+                    <div class="status-icon valid">
+                        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
                     <h1>TTE VALID</h1>
-                    <p class="sub">Tanda Tangan Elektronik ini sah dan tercatat dalam sistem.</p>
+                    <p class="sub">Tanda Tangan Elektronik ini sah dan tercatat resmi dalam sistem.</p>
+
                     ${hasTTD ? `
                     <div class="ttd-card">
-                        <img src="${d.ttdBase64}" alt="Tanda Tangan ${esc(d.nama)}">
-                        <div class="ttd-label">Tanda Tangan — ${esc(d.nama)}</div>
+                        <img src="${d.ttdBase64}" alt="Tanda Tangan ${esc(d.nama)}" loading="eager">
+                        <div class="ttd-label">Tanda Tangan Digital — ${esc(d.nama)}</div>
                     </div>` : ''}
+
                     <div class="info">
                         <div class="row"><span class="label">Nama</span><span class="value">${esc(d.nama)}</span></div>
                         <div class="row"><span class="label">Jabatan</span><span class="value">${esc(d.jabatan)}</span></div>
                         <div class="row"><span class="label">NIP</span><span class="value">${esc(d.nip)}</span></div>
-                        <div class="row"><span class="label">UUID</span><span class="value" style="font-size:11px;font-family:monospace">${esc(d.uuid)}</span></div>
-                        <div class="row"><span class="label">Timestamp</span><span class="value">${esc(d.timestamp)}</span></div>
+                        <div class="row"><span class="label">UUID</span><span class="value" style="font-size:11px;font-family:monospace;letter-spacing:-0.2px">${esc(d.uuid)}</span></div>
+                        <div class="row"><span class="label">Waktu TTE</span><span class="value">${esc(d.timestamp)}</span></div>
                     </div>
+
                     <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
                 `;
-                } else {
-                    // NOT FOUND
-                    cardContent.innerHTML = `
+            }
+
+            // Render: Data Tidak Ditemukan
+            function renderNotFound(id) {
+                cardContent.innerHTML = `
                     <div class="badge invalid">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                         TIDAK DITEMUKAN
                     </div>
-                    <div class="status-icon invalid"><svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
+                    <div class="status-icon invalid">
+                        <svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </div>
                     <h1>DATA TIDAK DITEMUKAN</h1>
-                    <p class="sub">TTE dengan ID berikut tidak tercatat dalam sistem.</p>
-                    <div class="uuid-box">${esc(uuid)}</div>
+                    <p class="sub">ID TTE berikut tidak tercatat dalam database sistem verifikasi.</p>
+                    <div class="uuid-box">${esc(id)}</div>
                     <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
                 `;
-                }
+            }
 
-            } catch (err) {
-                loadingWrap.classList.add('hide');
+            // Render: Error Koneksi
+            function renderError(id, msg) {
                 cardContent.innerHTML = `
-                <div class="badge invalid">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    ERROR
-                </div>
-                <div class="status-icon invalid"><svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
-                <h1>GAGAL MEMVERIFIKASI</h1>
-                <p class="sub">Terjadi kesalahan saat menghubungi server. Silakan coba lagi.</p>
-                <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
-            `;
+                    <div class="badge invalid">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        GAGAL MEMVERIFIKASI
+                    </div>
+                    <div class="status-icon invalid">
+                        <svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </div>
+                    <h1>KONEKSI TERPUTUS</h1>
+                    <p class="sub">${esc(msg)}</p>
+                    <button class="btn-retry" onclick="location.reload()">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        Coba Lagi
+                    </button>
+                    <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
+                `;
+            }
+
+            // Render: Kunjungan tanpa query parameter ?id=
+            function renderNoUUID() {
+                cardContent.innerHTML = `
+                    <div class="badge loading">
+                        PORTAL VERIFIKASI
+                    </div>
+                    <div class="status-icon" style="background: rgba(255,255,255,0.08);">
+                        <svg viewBox="0 0 24 24" style="stroke:#60a5fa"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    </div>
+                    <h1>🔐 QR TTE Verifier</h1>
+                    <p class="sub" style="margin-top:10px">Scan QR Code TTE pada dokumen fisik atau digital Anda untuk memverifikasi keaslian tanda tangan secara online.</p>
+                    <p class="footer-text">© 2026 Digitalized by <a href="http://about-wrwn.ct.ws/?i=1" target="_blank" rel="noopener noreferrer">WiraWebSolusi</a></p>
+                `;
+            }
+
+            function esc(text) {
+                if (!text) return '';
+                const el = document.createElement('span');
+                el.textContent = String(text);
+                return el.innerHTML;
             }
         })();
-
-        function esc(text) {
-            if (!text) return '';
-            const el = document.createElement('span');
-            el.textContent = String(text);
-            return el.innerHTML;
-        }
     </script>
 </body>
 

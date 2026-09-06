@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin — QR TTE Generator</title>
+    <meta name="description" content="Panel Pengelolaan Data Tanda Tangan Elektronik QR TTE Generator">
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #070a13;
+            --bg-surface: #0e1320;
+            --bg-card: #131929;
+            --bg-card-hover: #182035;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(59, 130, 246, 0.35);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-indigo: #6366f1;
+            --accent-cyan: #06b6d4;
+            --accent-lime: #c5db24;
+            --accent-red: #ef4444;
+            --accent-emerald: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        /* Ambient Glow Mesh */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .mesh-blob-1 {
+            position: absolute;
+            top: -15%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+            filter: blur(80px);
+        }
+
+        .mesh-blob-2 {
+            position: absolute;
+            bottom: -15%;
+            right: -10%;
+            width: 55vw;
+            height: 55vw;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            filter: blur(90px);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 270px;
+            background: rgba(14, 19, 32, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 18px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 50;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 8px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .brand-icon svg {
+            width: 22px;
+            height: 22px;
+            color: #fff;
+        }
+
+        .brand-text h2 {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            background: linear-gradient(to right, #fff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* User Profile Widget (Reference Style) */
+        .user-widget {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .user-widget-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .user-avatar-wrap {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            border: 2px solid var(--bg-surface);
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+        }
+
+        .theme-toggle-dummy {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle-dummy:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-date {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .user-greeting {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 2px;
+        }
+
+        /* Nav Menu */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-weight: 700;
+        }
+
+        /* Sidebar Bottom Banner */
+        .sidebar-bottom-banner {
+            margin-top: auto;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(124, 58, 237, 0.15));
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .banner-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #93c5fd;
+            margin-bottom: 4px;
+        }
+
+        .banner-header span.pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .banner-text {
+            font-size: 10px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===== MAIN CONTENT AREA ===== */
+        .main-wrapper {
+            margin-left: 270px;
+            flex: 1;
+            padding: 28px 36px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Top Bar */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .time-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .time-pill svg {
+            width: 14px;
+            height: 14px;
+            color: #60a5fa;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 240px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 12px 8px 34px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+        }
+
+        /* ===== STAT CARDS GRID (Reference Style) ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1.3fr 1.2fr 1.1fr;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .card-widget {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Widget 1: AI Insights Style */
+        .card-insights {
+            background: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.25) 0%, rgba(19, 25, 41, 0.95) 75%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            min-height: 180px;
+        }
+
+        .insights-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #a5b4fc;
+            width: fit-content;
+        }
+
+        .insights-dots {
+            display: flex;
+            gap: 4px;
+            margin: 18px 0 8px;
+        }
+
+        .insights-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .insights-dot.active {
+            width: 16px;
+            border-radius: 99px;
+            background: #fff;
+        }
+
+        .insights-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.35;
+        }
+
+        .insights-btn {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .insights-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        /* Widget 2: Balance Overview Style */
+        .card-header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .card-main-val {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .card-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .card-pill.up {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .card-sub-info {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .card-sub-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Wave Chart SVG */
+        .wave-chart {
+            width: 100%;
+            height: 45px;
+            margin-top: 12px;
+        }
+
+        /* Widget 3: Earnings Circular Gauge Style */
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            margin: 4px 0;
+        }
+
+        .gauge-svg {
+            width: 150px;
+            height: 85px;
+            overflow: visible;
+        }
+
+        .gauge-center-text {
+            position: absolute;
+            bottom: 6px;
+            text-align: center;
+        }
+
+        .gauge-center-text .pct {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .gauge-center-text .lbl {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .gauge-legend {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Widget 4: Quick Details */
+        .stat-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .stat-row-item .label {
+            color: var(--text-secondary);
+        }
+
+        .stat-row-item .val {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* ===== MAIN DATA TABLE SECTION (Reference Style) ===== */
+        .table-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px;
+            margin-top: 24px;
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .table-tools {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 7px 12px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .table-filter-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Table Design */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        thead th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            vertical-align: middle;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cell-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: #cbd5e1;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cell-info .name {
+            font-weight: 700;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .cell-info .job {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .nip-pill {
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .uuid-pill {
+            font-family: monospace;
+            font-size: 11px;
+            color: #60a5fa;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.2s;
+        }
+
+        .uuid-pill:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .ttd-thumb {
+            width: 48px;
+            height: 28px;
+            object-fit: contain;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 2px 4px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.2s;
+        }
+
+        .ttd-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .action-btns {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-icon-tbl {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .btn-icon-tbl:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-icon-tbl.delete:hover {
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 44px;
+            height: 44px;
+            opacity: 0.3;
+            margin-bottom: 12px;
+        }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: var(--bg-surface);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            transform: translateY(20px) scale(0.96);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* ===== LOGIN SCREEN (AUTH MODAL) ===== */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: #070a13;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: rgba(19, 25, 41, 0.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 50px rgba(59, 130, 246, 0.15);
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .login-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .login-logo svg {
+            width: 32px;
+            height: 32px;
+            color: #fff;
+        }
+
+        .login-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .login-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 14px 12px 38px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-wrap svg.icon-left {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.99);
+        }
+
+        .login-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            font-size: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 300;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Mobile Drawer */
+        .mobile-menu-btn {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: #fff;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .main-wrapper {
+                margin-left: 0;
+                padding: 20px 16px;
+            }
+            .mobile-menu-btn {
+                display: flex;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Ambient Background Glow -->
+    <div class="bg-mesh">
+        <div class="mesh-blob-1"></div>
+        <div class="mesh-blob-2"></div>
+    </div>
+
+    <!-- ===== LOGIN MODAL OVERLAY (REQUIRED FIRST) ===== -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <div class="login-logo">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h1 class="login-title">Admin Dashboard</h1>
+            <p class="login-sub">Masuk untuk mengelola seluruh data TTE terbitan</p>
+
+            <div class="login-error" id="loginError">Username atau password tidak sesuai!</div>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="form-group">
+                    <label for="inputUser">Username</label>
+                    <div class="input-wrap">
+                        <svg class="icon-left" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <input type="text" id="inputUser" placeholder="Masukkan username" required autofocus>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPass">Password</label>
+                    <div class="input-wrap">
+                        <svg class="icon-left" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        <input type="password" id="inputPass" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Masuk ke Dashboard →
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== SIDEBAR NAVIGATION ===== -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Brand -->
+        <div class="brand">
+            <div class="brand-icon">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h2>QR TTE Admin</h2>
+                <span>Management Hub</span>
+            </div>
+        </div>
+
+        <!-- User Profile Card (Reference Style) -->
+        <div class="user-widget">
+            <div class="user-widget-top">
+                <div class="user-avatar-wrap">
+                    <div class="user-avatar">W</div>
+                    <div class="user-status-dot"></div>
+                </div>
+                <div class="theme-toggle-dummy" title="Dark Mode Active">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="user-date" id="sidebarDate">Sunday, Sept 6</div>
+            <div class="user-greeting">Welcome back, <br><span style="color:#60a5fa">si_wrwn!</span></div>
+        </div>
+
+        <!-- Nav Items -->
+        <nav class="nav-menu">
+            <a class="nav-item active" href="#">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                Dashboard
+            </a>
+            <a class="nav-item" href="#tableSection">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Semua Data TTE
+                <span class="nav-badge" id="navTotalCount">0</span>
+            </a>
+            <a class="nav-item" href="index.html" target="_blank">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 4v16m8-8H4"/>
+                </svg>
+                Buat TTE Baru ↗
+            </a>
+            <a class="nav-item" href="verifikasi.html" target="_blank">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+                Portal Verifikasi ↗
+            </a>
+            <a class="nav-item" id="btnLogout" style="margin-top:auto; color:#f87171;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Keluar (Logout)
+            </a>
+        </nav>
+
+        <!-- Sidebar Bottom Banner -->
+        <div class="sidebar-bottom-banner">
+            <div class="banner-header">
+                <span class="pulse-dot"></span>
+                Google Sheets Live Sync
+            </div>
+            <div class="banner-text">Database cloud terhubung secara real-time ke Google Apps Script Web App.</div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-wrapper">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="mobile-menu-btn" id="mobileMenuToggle">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <div class="time-pill">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span id="currentDateStr">Bulan Ini</span>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="quickSearch" placeholder="Cari Nama / NIP / UUID...">
+                </div>
+                <button class="btn-action" id="btnRefresh" title="Muat ulang data dari Sheets">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Refresh
+                </button>
+                <button class="btn-action" id="btnExportCSV" title="Export seluruh data ke file CSV">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export CSV
+                </button>
+                <a href="index.html" target="_blank" class="btn-action btn-primary">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Buat TTE Baru
+                </a>
+            </div>
+        </header>
+
+        <!-- Stat Widgets Grid (Reference NeuroBank Style) -->
+        <section class="stats-grid">
+            <!-- Widget 1: AI Insights Card -->
+            <div class="card-widget card-insights">
+                <div>
+                    <div class="insights-tag">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        TTE Insights
+                    </div>
+                    <div class="insights-dots">
+                        <div class="insights-dot active"></div>
+                        <div class="insights-dot"></div>
+                        <div class="insights-dot"></div>
+                    </div>
+                    <div class="insights-text">
+                        Aktivitas pembuatan TTE berjalan stabil dan aman di cloud Google Sheets.
+                    </div>
+                </div>
+                <div class="insights-btn" title="Lihat detail">↗</div>
+            </div>
+
+            <!-- Widget 2: Balance Overview Card -->
+            <div class="card-widget">
+                <div>
+                    <div class="card-header-flex">
+                        <span class="card-title">Total TTE Terbit</span>
+                        <span class="card-pill up">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                            </svg>
+                            Live
+                        </span>
+                    </div>
+                    <div class="card-main-val" id="statTotalTTE">0</div>
+                    <div class="card-sub-info">
+                        <span>👥 <strong id="statUniqueNIP">0</strong> NIP Unik</span>
+                        <span>🏢 <strong id="statUniqueJob">0</strong> Jabatan</span>
+                    </div>
+                </div>
+                <!-- Mini Wave Sparkline SVG -->
+                <svg class="wave-chart" viewBox="0 0 200 40" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4"/>
+                            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0 30 Q 30 15, 60 25 T 120 15 T 160 20 T 200 10 L 200 40 L 0 40 Z" fill="url(#waveGrad)"/>
+                    <path d="M0 30 Q 30 15, 60 25 T 120 15 T 160 20 T 200 10" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                </svg>
+            </div>
+
+            <!-- Widget 3: Earnings Circular Gauge Card -->
+            <div class="card-widget">
+                <div class="card-header-flex">
+                    <span class="card-title">Integritas Sistem</span>
+                    <span class="card-title" style="color:#60a5fa">100%</span>
+                </div>
+                <div class="gauge-container">
+                    <svg class="gauge-svg" viewBox="0 0 100 55">
+                        <!-- Background Arc -->
+                        <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="9" stroke-linecap="round"/>
+                        <!-- Filled Arc (Gradient Cyan-Blue) -->
+                        <path id="gaugeArc" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#3b82f6" stroke-width="9" stroke-linecap="round"
+                              stroke-dasharray="125.6" stroke-dashoffset="0"/>
+                    </svg>
+                    <div class="gauge-center-text">
+                        <div class="pct" id="gaugePct">100%</div>
+                        <div class="lbl">Tercatat Sah</div>
+                    </div>
+                </div>
+                <div class="gauge-legend">
+                    <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Terverifikasi</div>
+                    <div class="legend-item"><span class="legend-dot" style="background:rgba(255,255,255,0.2)"></span> Target</div>
+                </div>
+            </div>
+
+            <!-- Widget 4: Quick Details -->
+            <div class="card-widget">
+                <div class="card-header-flex">
+                    <span class="card-title">Status Database</span>
+                    <span class="insights-btn" style="position:static; width:26px; height:26px;">↗</span>
+                </div>
+                <div class="stat-rows">
+                    <div class="stat-row-item">
+                        <span class="label">Penyimpanan</span>
+                        <span class="val" style="color:#34d399">Sheets API</span>
+                    </div>
+                    <div class="stat-row-item">
+                        <span class="label">Kecepatan Query</span>
+                        <span class="val">TextFinder</span>
+                    </div>
+                    <div class="stat-row-item">
+                        <span class="label">Kompresi TTD</span>
+                        <span class="val" style="color:#60a5fa">&lt; 30 KB</span>
+                    </div>
+                    <div class="stat-row-item">
+                        <span class="label">Autentikasi</span>
+                        <span class="val">si_wrwn</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Data Table Section -->
+        <section class="table-section" id="tableSection">
+            <div class="table-header">
+                <h3 class="table-title">Daftar Tanda Tangan Elektronik Terdaftar</h3>
+                <div class="table-tools">
+                    <div class="table-filter-btn" id="filterStatusBtn">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                        </svg>
+                        <span id="filterLabel">Semua Data</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">No</th>
+                            <th>Penandatangan</th>
+                            <th>NIP</th>
+                            <th>UUID</th>
+                            <th>Waktu Terbit</th>
+                            <th>Tanda Tangan</th>
+                            <th style="text-align: right; width: 130px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Loading State -->
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <div style="display: inline-block; width: 26px; height: 26px; border: 3px solid rgba(59,130,246,0.2); border-top-color:#3b82f6; border-radius:50%; animation: spin 0.8s linear infinite;"></div>
+                                <p style="margin-top: 10px; font-size: 13px;">Menghubungkan ke Google Sheets...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== DETAIL & QR MODAL ===== -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModal('detailModal')">✕</div>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px;" id="modalNama">Detail TTE</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;" id="modalJabatan">Penata Layanan Operasional</p>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;">
+                <!-- QR Container -->
+                <div id="modalQRContainer" style="width: 200px; height: 200px; margin: 0 auto; background:#fff; border-radius:12px; padding:10px; display: flex; align-items: center; justify-content: center;"></div>
+                <div style="margin-top: 14px; display: flex; justify-content: center; gap: 8px;">
+                    <button class="btn-action" id="btnDownloadModalQR">
+                        📥 Download QR PNG
+                    </button>
+                    <a id="btnOpenModalVerify" href="#" target="_blank" class="btn-action btn-primary">
+                        🔗 Buka Verifikasi ↗
+                    </a>
+                </div>
+            </div>
+
+            <div style="font-size: 12px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 14px;">
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted)">NIP</span><span id="modalNIP" style="font-weight:700; color:#fff;">—</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted)">UUID</span><span id="modalUUID" style="font-family:monospace; color:#60a5fa; font-size:11px;">—</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted)">Waktu Simpan</span><span id="modalTimestamp" style="color:#e2e8f0;">—</span></div>
+            </div>
+
+            <!-- Signature Preview -->
+            <div id="modalTTDWrap" style="margin-top: 16px; background:#fff; border-radius: 12px; padding: 10px; text-align: center;">
+                <p style="font-size: 10px; color: #64748b; margin-bottom: 6px;">Pratinjau Tanda Tangan Asli:</p>
+                <img id="modalTTDImg" src="" alt="TTD" style="max-height: 80px; max-width: 100%; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SIGNATURE ZOOM MODAL ===== -->
+    <div class="modal-overlay" id="ttdZoomModal" onclick="closeModal('ttdZoomModal')">
+        <div class="modal-card" style="max-width: 440px; text-align: center; background: #fff; color: #000;" onclick="event.stopPropagation()">
+            <div class="modal-close" style="background: rgba(0,0,0,0.06); color:#000;" onclick="closeModal('ttdZoomModal')">✕</div>
+            <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #1e293b;" id="zoomTitle">Tanda Tangan</h4>
+            <div style="padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                <img id="zoomImg" src="" alt="TTD Zoom" style="max-width: 100%; max-height: 220px; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg width="18" height="18" fill="none" stroke="#34d399" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M5 13l4 4L19 7"/>
+        </svg>
+        <span id="toastMsg">Teks disalin ke clipboard!</span>
+    </div>
+
+    <script>
+        (() => {
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycby-1lCiolaitI4gC46o9tzFsgExXWijCF6EEmj12wG3uyJzeN72AZf8AAbq1e-y1PX3/exec';
+
+            // Kredensial Login
+            const AUTH_USER = 'si_wrwn';
+            const AUTH_PASS = 'adminwrwn';
+            const AUTH_STORAGE_KEY = 'tte_admin_logged_in';
+
+            // State
+            let tteList = [];
+            let filteredList = [];
+            let currentModalQR = null;
+
+            // DOM Elements
+            const loginOverlay = document.getElementById('loginOverlay');
+            const loginForm = document.getElementById('loginForm');
+            const inputUser = document.getElementById('inputUser');
+            const inputPass = document.getElementById('inputPass');
+            const loginError = document.getElementById('loginError');
+            const btnLogout = document.getElementById('btnLogout');
+            const tableBody = document.getElementById('tableBody');
+            const quickSearch = document.getElementById('quickSearch');
+            const btnRefresh = document.getElementById('btnRefresh');
+            const btnExportCSV = document.getElementById('btnExportCSV');
+            const statTotalTTE = document.getElementById('statTotalTTE');
+            const statUniqueNIP = document.getElementById('statUniqueNIP');
+            const statUniqueJob = document.getElementById('statUniqueJob');
+            const navTotalCount = document.getElementById('navTotalCount');
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            // Format Tanggal Hari Ini
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('sidebarDate').textContent = dateStr;
+            document.getElementById('currentDateStr').textContent = now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+            // Mobile Sidebar Toggle
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+            });
+
+            // ===== 1. AUTENTIKASI =====
+            function checkAuth() {
+                const isLoggedIn = sessionStorage.getItem(AUTH_STORAGE_KEY) === 'true' || localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+                if (isLoggedIn) {
+                    loginOverlay.classList.add('hidden');
+                    loadDataFromSheets();
+                } else {
+                    loginOverlay.classList.remove('hidden');
+                }
+            }
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const u = inputUser.value.trim();
+                const p = inputPass.value.trim();
+
+                if (u === AUTH_USER && p === AUTH_PASS) {
+                    sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
+                    loginError.style.display = 'none';
+                    loginOverlay.classList.add('hidden');
+                    showToast('Selamat datang, si_wrwn!');
+                    loadDataFromSheets();
+                } else {
+                    loginError.style.display = 'block';
+                    inputPass.value = '';
+                    inputPass.focus();
+                }
+            });
+
+            btnLogout.addEventListener('click', () => {
+                if (confirm('Apakah Anda yakin ingin keluar dari dashboard admin?')) {
+                    sessionStorage.removeItem(AUTH_STORAGE_KEY);
+                    localStorage.removeItem(AUTH_STORAGE_KEY);
+                    location.reload();
+                }
+            });
+
+            // ===== 2. AMBIL DATA DARI GOOGLE SHEETS =====
+            async function loadDataFromSheets() {
+                renderLoading();
+
+                try {
+                    const res = await fetch(`${GAS_URL}?action=getAll`);
+                    const json = await res.json();
+
+                    if (json.status === 'success' && Array.isArray(json.data)) {
+                        tteList = json.data;
+                        filteredList = [...tteList];
+                        updateStats();
+                        renderTable();
+                    } else {
+                        // Jika deployment Apps Script belum di-update dengan action=getAll, tampilkan pesan ramah
+                        console.warn('Backend response:', json);
+                        handleFallbackData();
+                    }
+                } catch (err) {
+                    console.error('Fetch error:', err);
+                    handleFallbackData();
+                }
+            }
+
+            function handleFallbackData() {
+                // Tampilkan pesan panduan bila Apps Script belum di-update ke versi terbaru
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <svg fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24" style="color:#f59e0b; opacity:0.8;">
+                                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <h4 style="font-size:15px; color:#fff; font-weight:700; margin-bottom:6px;">Menunggu Deployment Versi Baru di Apps Script</h4>
+                            <p style="font-size:12px; color:#94a3b8; max-width:480px; margin:0 auto 16px;">
+                                File <code>Code.gs</code> di repository telah dilengkapi endpoint <code>action=getAll</code>. 
+                                Silakan salin isi terbaru <code>Code.gs</code> ke editor Google Apps Script dan klik <strong>Deploy > New version</strong>.
+                            </p>
+                            <button class="btn-action btn-primary" onclick="loadDataFromSheets()" style="margin: 0 auto;">
+                                🔄 Coba Hubungkan Ulang
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            function renderLoading() {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(59,130,246,0.2); border-top-color:#3b82f6; border-radius:50%; animation: spin 0.8s linear infinite;"></div>
+                            <p style="margin-top: 12px; font-size: 13px; color:#94a3b8;">Memuat data TTE dari Google Sheets...</p>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // ===== 3. UPDATE METRIK STATISTIK =====
+            function updateStats() {
+                const total = tteList.length;
+                statTotalTTE.textContent = total;
+                navTotalCount.textContent = total;
+
+                // Hitung NIP unik
+                const uniqueNIPs = new Set(tteList.map(item => (item.nip || '').trim()).filter(Boolean));
+                statUniqueNIP.textContent = uniqueNIPs.size;
+
+                // Hitung Jabatan unik
+                const uniqueJobs = new Set(tteList.map(item => (item.jabatan || '').trim()).filter(Boolean));
+                statUniqueJob.textContent = uniqueJobs.size;
+            }
+
+            // ===== 4. RENDER TABEL =====
+            function renderTable() {
+                if (filteredList.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <p>Belum ada data TTE yang sesuai.</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tableBody.innerHTML = filteredList.map((item, idx) => {
+                    const initials = (item.nama || 'U').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+                    const hasTTD = item.ttdBase64 && item.ttdBase64.length > 20;
+                    const verifyURL = `verifikasi.html?id=${encodeURIComponent(item.uuid || '')}`;
+
+                    return `
+                        <tr>
+                            <td style="color:var(--text-muted); font-weight:600;">${idx + 1}</td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="cell-avatar">${initials}</div>
+                                    <div class="cell-info">
+                                        <div class="name">${esc(item.nama)}</div>
+                                        <div class="job">${esc(item.jabatan)}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="nip-pill">${esc(item.nip)}</span></td>
+                            <td>
+                                <span class="uuid-pill" onclick="copyUUID('${esc(item.uuid)}') title="Klik untuk salin UUID">
+                                    ${esc((item.uuid || '').slice(0, 8))}...
+                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </span>
+                            </td>
+                            <td style="color:var(--text-secondary); font-size:12px;">${esc(item.timestamp)}</td>
+                            <td>
+                                ${hasTTD ? `
+                                    <img src="${item.ttdBase64}" class="ttd-thumb" alt="TTD" title="Klik untuk perbesar" onclick="zoomTTD('${item.ttdBase64}', '${esc(item.nama)}')">
+                                ` : '<span style="color:var(--text-muted); font-size:11px;">Tidak ada</span>'}
+                            </td>
+                            <td>
+                                <div class="action-btns" style="justify-content: flex-end;">
+                                    <button class="btn-icon-tbl" title="Lihat QR & Detail" onclick="openDetailModal(${idx})">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                    <a href="${verifyURL}" target="_blank" class="btn-icon-tbl" title="Buka Halaman Verifikasi">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                        </svg>
+                                    </a>
+                                    <button class="btn-icon-tbl delete" title="Hapus TTE" onclick="deleteTTE('${esc(item.uuid)}', '${esc(item.nama)}')">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // ===== 5. PENCARIAN CEPAT =====
+            quickSearch.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (!query) {
+                    filteredList = [...tteList];
+                } else {
+                    filteredList = tteList.filter(item => {
+                        return (item.nama || '').toLowerCase().includes(query) ||
+                               (item.nip || '').toLowerCase().includes(query) ||
+                               (item.jabatan || '').toLowerCase().includes(query) ||
+                               (item.uuid || '').toLowerCase().includes(query);
+                    });
+                }
+                renderTable();
+            });
+
+            // ===== 6. DETAIL & QR MODAL =====
+            window.openDetailModal = (idx) => {
+                const item = filteredList[idx];
+                if (!item) return;
+
+                document.getElementById('modalNama').textContent = item.nama;
+                document.getElementById('modalJabatan').textContent = item.jabatan;
+                document.getElementById('modalNIP').textContent = item.nip;
+                document.getElementById('modalUUID').textContent = item.uuid;
+                document.getElementById('modalTimestamp').textContent = item.timestamp;
+
+                const hasTTD = item.ttdBase64 && item.ttdBase64.length > 20;
+                const ttdWrap = document.getElementById('modalTTDWrap');
+                const ttdImg = document.getElementById('modalTTDImg');
+                if (hasTTD) {
+                    ttdWrap.style.display = 'block';
+                    ttdImg.src = item.ttdBase64;
+                } else {
+                    ttdWrap.style.display = 'none';
+                }
+
+                // URL Verifikasi
+                const baseURL = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+                const verifyURL = `${baseURL}/verifikasi.html?id=${encodeURIComponent(item.uuid)}`;
+                document.getElementById('btnOpenModalVerify').href = verifyURL;
+
+                // Render QR Code di Modal
+                const qrContainer = document.getElementById('modalQRContainer');
+                qrContainer.innerHTML = '';
+
+                currentModalQR = new QRCodeStyling({
+                    width: 180,
+                    height: 180,
+                    type: "canvas",
+                    data: verifyURL,
+                    margin: 10,
+                    qrOptions: { errorCorrectionLevel: "H" },
+                    dotsOptions: { color: "#001f5b", type: "rounded" },
+                    backgroundOptions: { color: "#ffffff" },
+                    cornersSquareOptions: { color: "#0066cc", type: "extra-rounded" }
+                });
+                currentModalQR.append(qrContainer);
+
+                // Download QR
+                document.getElementById('btnDownloadModalQR').onclick = () => {
+                    currentModalQR.download({ name: `QR_TTE_${item.nip || 'User'}`, extension: "png" });
+                };
+
+                openModal('detailModal');
+            };
+
+            // ===== 7. ZOOM TTD =====
+            window.zoomTTD = (src, nama) => {
+                document.getElementById('zoomImg').src = src;
+                document.getElementById('zoomTitle').textContent = `Tanda Tangan — ${nama}`;
+                openModal('ttdZoomModal');
+            };
+
+            // ===== 8. HAPUS DATA TTE =====
+            window.deleteTTE = async (uuid, nama) => {
+                if (!confirm(`Hapus data TTE atas nama ${nama}?\nData akan dihapus secara permanen dari Google Sheets.`)) {
+                    return;
+                }
+
+                showToast(`Menghapus data ${nama}...`);
+
+                try {
+                    const res = await fetch(GAS_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'delete', uuid: uuid })
+                    });
+                    const json = await res.json();
+
+                    if (json.status === 'success') {
+                        showToast(`Data ${nama} berhasil dihapus!`);
+                        // Hapus dari state lokal
+                        tteList = tteList.filter(i => i.uuid !== uuid);
+                        filteredList = filteredList.filter(i => i.uuid !== uuid);
+                        updateStats();
+                        renderTable();
+                    } else {
+                        alert(json.message || 'Gagal menghapus data.');
+                    }
+                } catch (err) {
+                    alert('Gagal menghubungi server Google Apps Script.');
+                }
+            };
+
+            // ===== 9. EXPORT DATA KE CSV =====
+            btnExportCSV.addEventListener('click', () => {
+                if (tteList.length === 0) {
+                    alert('Tidak ada data untuk diexport.');
+                    return;
+                }
+
+                const headers = ['No', 'Nama', 'Jabatan', 'NIP', 'UUID', 'Timestamp'];
+                const rows = tteList.map((item, idx) => [
+                    idx + 1,
+                    `"${(item.nama || '').replace(/"/g, '""')}"`,
+                    `"${(item.jabatan || '').replace(/"/g, '""')}"`,
+                    `'${item.nip || ''}`,
+                    `"${item.uuid || ''}"`,
+                    `"${item.timestamp || ''}"`
+                ]);
+
+                const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', `Data_TTE_${new Date().toISOString().slice(0, 10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('File CSV berhasil diunduh!');
+            });
+
+            // Refresh Button
+            btnRefresh.addEventListener('click', () => {
+                showToast('Memperbarui data...');
+                loadDataFromSheets();
+            });
+
+            // Modal Helper
+            window.openModal = (id) => {
+                document.getElementById(id).classList.add('active');
+            };
+            window.closeModal = (id) => {
+                document.getElementById(id).classList.remove('active');
+            };
+
+            // Toast Helper
+            window.showToast = (msg) => {
+                toastMsg.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            };
+
+            window.copyUUID = (text) => {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(`UUID disalin: ${text.slice(0, 8)}...`);
+                });
+            };
+
+            function esc(text) {
+                if (!text) return '';
+                const el = document.createElement('span');
+                el.textContent = String(text);
+                return el.innerHTML;
+            }
+
+            // Jalankan Pemeriksaan Auth saat halaman dibuka
+            checkAuth();
+        })();
+    </script>
+</body>
+
+</html>
